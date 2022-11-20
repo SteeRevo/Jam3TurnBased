@@ -8,10 +8,35 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Resource",
+"class": "Grid",
+"language": "GDScript",
+"path": "res://Grid.gd"
+}, {
+"base": "Path2D",
+"class": "Unit",
+"language": "GDScript",
+"path": "res://Unit.gd"
+} ]
+_global_script_class_icons={
+"Grid": "",
+"Unit": ""
+}
+
 [application]
 
 config/name="Jam 3"
+run/main_scene="res://Scenes/BaseLevel.tscn"
 config/icon="res://icon.png"
+
+[display]
+
+window/size/width=320
+window/size/height=180
+window/size/test_width=1280
+window/size/test_height=720
+window/stretch/mode="2d"
 
 [physics]
 
