@@ -2,14 +2,22 @@ tool
 class_name Unit
 extends Path2D
 
+enum sides {PLAYER, ENEMY}
+
 export var grid: Resource = preload("res://Grid.tres")
 export var move_range := 6
 export var skin: Texture setget set_skin
 export var move_speed := 20
+export (sides) var team
 
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
 var is_walking := false setget set_is_walking
+# this unit has no more moves left this turn.
+var finished := false
+
+var side
+
 
 signal walk_finished
 
