@@ -4,6 +4,7 @@ extends Node2D
 
 signal accept_pressed(cell)
 signal moved(new_cell)
+signal hello()
 
 export var grid: Resource = preload("res://Grid.tres")
 export var ui_cooldown := 0.1
@@ -15,12 +16,14 @@ onready var _timer: Timer = $Timer
 func _ready():
 	_timer.wait_time = ui_cooldown
 	position = grid.calculate_grid_coordinates(cell)
+	emit_signal("hello")
 	
 func _unhandled_input(event):
 	if event is InputEventMouseMotion:
 		self.cell = grid.calculate_grid_coordinates(event.position)
 		
-	elif event.is_action_pressed("ui_accept") and event.is_action_pressed("click"):
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("click"):
+		
 		emit_signal("accept_pressed", cell)
 		get_tree().set_input_as_handled()
 		
