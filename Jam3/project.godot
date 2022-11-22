@@ -9,25 +9,49 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node2D",
+"base": "Reference",
 "class": "Cursor",
 "language": "GDScript",
-"path": "res://cursor.gd"
+"path": "res://cursor/cursor.gd"
+}, {
+"base": "YSort",
+"class": "GameBoard",
+"language": "GDScript",
+"path": "res://Scenes/Gameboard.gd"
 }, {
 "base": "Resource",
 "class": "Grid",
 "language": "GDScript",
 "path": "res://Grid.gd"
 }, {
+"base": "TileMap",
+"class": "Overlay",
+"language": "GDScript",
+"path": "res://testUnitOverlay/Overlay.gd"
+}, {
+"base": "Reference",
+"class": "PathFinder",
+"language": "GDScript",
+"path": "res://pathFinder.gd"
+}, {
 "base": "Path2D",
 "class": "Unit",
 "language": "GDScript",
-"path": "res://Unit.gd"
+"path": "res://Unit/Unit.gd"
+}, {
+"base": "TileMap",
+"class": "UnitPath",
+"language": "GDScript",
+"path": "res://UnitPath.gd"
 } ]
 _global_script_class_icons={
 "Cursor": "",
+"GameBoard": "",
 "Grid": "",
-"Unit": ""
+"Overlay": "",
+"PathFinder": "",
+"Unit": "",
+"UnitPath": ""
 }
 
 [application]
