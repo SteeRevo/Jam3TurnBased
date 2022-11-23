@@ -63,6 +63,5 @@ skin = ExtResource( 10 )
 team = 1
 
 [node name="UnitPath" parent="Gameboard" instance=ExtResource( 8 )]
-
 [connection signal="accept_pressed" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_accept_pressed"]
 [connection signal="moved" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_moved"]
