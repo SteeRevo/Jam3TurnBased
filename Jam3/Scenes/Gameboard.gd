@@ -21,9 +21,12 @@ var _current_turn = PLAYER
 var unit_teams = [[], []]
 
 onready var _unit_path: UnitPath = $UnitPath
+onready var _map: TileMap = $TileMap
 
 func _ready():
+	print(_map.get_movement_costs(grid))
 	_reinitialize()
+	
 	
 
 func is_occupied(cell: Vector2):
