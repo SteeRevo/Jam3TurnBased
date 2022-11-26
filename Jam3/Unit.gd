@@ -16,9 +16,6 @@ var is_walking := false setget set_is_walking
 # this unit has no more moves left this turn.
 var finished := false
 
-var side
-
-
 signal walk_finished
 
 onready var _sprite: Sprite = $PathFollow2D/Sprite

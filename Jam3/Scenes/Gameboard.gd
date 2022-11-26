@@ -18,9 +18,13 @@ var _walkable_cells := []
 # is it the player's turn?
 var _current_turn = PLAYER
 
+var _selecting_opponent = false
+
 var unit_teams = [[], []]
 
 onready var _unit_path: UnitPath = $UnitPath
+
+signal choose_opponent
 
 func _ready():
 	_reinitialize()
@@ -128,11 +132,32 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_deselect_active_unit()
 	_active_unit.walk_along(_unit_path.current_path)
 	yield(_active_unit, "walk_finished")
+	# process combat choices
+	_combat_step()
+	
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
 	_check_turn_end()
 
+func _combat_step() :
+	# yield again and wait for opponent choice (if any)
+	var avail_opponents = _get_adjacent_units(_active_unit.cell, 1 - _current_turn)
+	if avail_opponents.size() > 0:
+		_selecting_opponent = true
+		var opp = yield(self, "choose_opponent")
+		while true:
+			if opp in avail_opponents or opp == null:
+				print("chose %s" % opp)
+				break
+			else:
+				print("choose an adjacent enemy unit to fight!")
+				opp = yield(self, "choose_opponent")
+		_selecting_opponent = false
+		if (opp == null):
+			print("no fight")
+		else:
+			print(_active_unit, " fights ", avail_opponents[opp])
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
@@ -141,17 +166,22 @@ func _on_Cursor_moved(new_cell: Vector2) -> void:
 
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
+	#replace this with an FSM?
 	if (_current_turn != PLAYER): return
 	if not _active_unit:
 		_select_unit(cell)
 	elif _active_unit.is_selected:
 		_move_active_unit(cell)
-
+	elif _selecting_opponent:
+		emit_signal("choose_opponent", cell)
+		
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _active_unit and event.is_action_pressed("ui_cancel"):
+	if _active_unit and _active_unit.is_selected and event.is_action_pressed("ui_cancel"):
 		_deselect_active_unit()
 		_clear_active_unit()
+	# press esc while choosing opponents to choose no opponent (not fight)
+	if _selecting_opponent: emit_signal("choose_opponent", null)
 
 func temp_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
@@ -163,6 +193,19 @@ func temp_enemy_turn():
 		unit.finished = true;
 	_check_turn_end()
 	return
+	
+func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
+	# get the units that are adjacent to the given cell and are on the given 
+	# team
+	var adj = {};
+	# this currently counts diagonals as adjacent. Not sure if that is desired but it can be changed
+	for i in range(-1, 2):
+		for j in range(-1, 2):
+			if i == 0 and j == 0: continue
+			var loc = Vector2(cell.x + i, cell.y + j)
+			if _units.has(loc) and _units[loc].team == team:
+				adj[loc] = _units[loc]
+	return adj
 	
 	
 	
