@@ -20,11 +20,15 @@ var _current_turn = PLAYER
 
 var unit_teams = [[], []]
 
+const MAX_VALUE = 9999999
+
+var _movement_costs
+
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 
 func _ready():
-	print(_map.get_movement_costs(grid))
+	_movement_costs = _map.get_movement_costs(grid)
 	_reinitialize()
 	
 	
@@ -48,7 +52,7 @@ func _reinitialize():
 		_units[unit.cell] = unit
 		
 func get_walkable_cells(unit: Unit):
-	return _flood_fill(unit.cell, unit.move_range)
+	return _dijkstra(unit.cell, unit.move_range)
 	
 func _check_turn_end():
 	for unit in _units.values():
@@ -97,6 +101,51 @@ func _flood_fill(cell: Vector2, max_distance: int) -> Array:
 
 			stack.append(coordinates)
 	return array
+
+func _dijkstra(cell: Vector2, max_distance: int) -> Array:
+	var movable_cells = [cell]
+	var visited = []
+	var distances = []
+	var previous = []
+	
+	for y in range(grid.size.y):
+		visited.append([])
+		distances.append([])
+		previous.append([])
+		for x in range(grid.size.x):
+			visited[y].append(false)
+			distances[y].append(MAX_VALUE)
+			previous[y].append(null)
+	
+	var queue = PriorityQueue.new()
+	queue.push(cell, 0)
+	distances[cell.y][cell.x] = 0
+	
+	var tile_cost
+	var distance_to_node
+	
+	while not queue.is_empty():
+		var current = queue.pop()
+		visited[current.value.y][current.value.x] = true
+		
+		for direction in DIRECTIONS:
+			var coordinates = current.value + direction
+			if grid.is_within_bounds(coordinates) and !is_occupied(coordinates):
+				if visited[coordinates.y][coordinates.x]:
+					continue
+				
+				else:
+					tile_cost = _movement_costs[coordinates.y][coordinates.x]
+					distance_to_node = current.priority + tile_cost
+					
+					
+				if distance_to_node <= max_distance:
+					previous[coordinates.y][coordinates.x] = current.value
+					movable_cells.append(coordinates)
+					queue.push(coordinates, distance_to_node)
+		
+	
+	return movable_cells
 
 func _select_unit(cell: Vector2) -> void:
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
