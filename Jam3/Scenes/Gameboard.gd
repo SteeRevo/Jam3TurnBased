@@ -133,17 +133,10 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_active_unit.walk_along(_unit_path.current_path)
 	yield(_active_unit, "walk_finished")
 	# process combat choices
-	_combat_step()
-	
-	# for now we say the unit is done
-	_active_unit.finished = true
-	_clear_active_unit()
-	_check_turn_end()
-
-func _combat_step() :
 	# yield again and wait for opponent choice (if any)
 	var avail_opponents = _get_adjacent_units(_active_unit.cell, 1 - _current_turn)
 	if avail_opponents.size() > 0:
+		_unit_overlay.draw(avail_opponents.keys())
 		_selecting_opponent = true
 		var opp = yield(self, "choose_opponent")
 		while true:
@@ -158,6 +151,13 @@ func _combat_step() :
 			print("no fight")
 		else:
 			print(_active_unit, " fights ", avail_opponents[opp])
+		_unit_overlay.clear()
+	
+	# for now we say the unit is done
+	_active_unit.finished = true
+	_clear_active_unit()
+	_check_turn_end()
+	
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
@@ -177,11 +177,14 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 		
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _active_unit and _active_unit.is_selected and event.is_action_pressed("ui_cancel"):
-		_deselect_active_unit()
-		_clear_active_unit()
-	# press esc while choosing opponents to choose no opponent (not fight)
-	if _selecting_opponent: emit_signal("choose_opponent", null)
+	if _active_unit and event.is_action_pressed("ui_cancel"):
+		if _active_unit.is_selected:
+			_deselect_active_unit()
+			_clear_active_unit()
+		# press esc while choosing opponents to choose no opponent (not fight)
+		if _selecting_opponent:
+			emit_signal("choose_opponent", null)
+			
 
 func temp_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
