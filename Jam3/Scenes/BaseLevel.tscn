@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://tilemaps/temp_honey.png" type="Texture" id=1]
 [ext_resource path="res://tilemaps/TileSetExtender.gd" type="Script" id=2]
@@ -10,7 +10,6 @@
 [ext_resource path="res://UnitPath.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Scenes/Gameboard.gd" type="Script" id=9]
 [ext_resource path="res://temp_hornet(evil).png" type="Texture" id=10]
-[ext_resource path="res://Scenes/BattleManager.gd" type="Script" id=11]
 
 [sub_resource type="TileSet" id=1]
 0/name = "temp_honey.png 0"
@@ -64,9 +63,6 @@ skin = ExtResource( 10 )
 team = 1
 
 [node name="UnitPath" parent="Gameboard" instance=ExtResource( 8 )]
-
-[node name="BattleManager" type="Node" parent="Gameboard"]
-script = ExtResource( 11 )
 
 [connection signal="accept_pressed" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_accept_pressed"]
 [connection signal="moved" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_moved"]

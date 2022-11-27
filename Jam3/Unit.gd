@@ -7,8 +7,15 @@ enum sides {PLAYER, ENEMY}
 export var grid: Resource = preload("res://Grid.tres")
 export var move_range := 6
 export var skin: Texture setget set_skin
-export var move_speed := 20
+export var move_speed := 100
 export (sides) var team
+
+export var health := 5 setget set_health
+export var attack := 2
+export var defense := 2
+export var hit_rate := 0.7
+export var evasion := 0.4
+
 
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
@@ -21,6 +28,8 @@ signal walk_finished
 onready var _sprite: Sprite = $PathFollow2D/Sprite
 onready var anim_player: AnimationPlayer = $AnimationPlayer
 onready var path_follow: PathFollow2D = $PathFollow2D
+
+
 
 func _ready():
 	set_process(false)
@@ -73,6 +82,9 @@ func set_skin(value: Texture) -> void:
 func set_is_walking(value: bool) -> void:
 	is_walking = value
 	set_process(is_walking)
+	
+func set_health(val: int):
+	health = val
 	
 	
 	
