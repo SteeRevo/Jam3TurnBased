@@ -22,6 +22,8 @@ var unit_teams = [[], []]
 
 onready var _unit_path: UnitPath = $UnitPath
 
+onready var _ai_brain = $AIBrain
+
 func _ready():
 	_reinitialize()
 	
@@ -45,7 +47,7 @@ func _reinitialize():
 		_units[unit.cell] = unit
 		
 func get_walkable_cells(unit: Unit):
-	return _flood_fill(unit.cell, unit.move_range)
+	return flood_fill(unit.cell, unit.move_range)
 	
 func _check_turn_end():
 	for unit in _units.values():
@@ -66,9 +68,9 @@ func _set_turn(turn):
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
 	if _current_turn == ENEMY:
-		temp_enemy_turn()
+		execute_enemy_turn()
 	
-func _flood_fill(cell: Vector2, max_distance: int) -> Array:
+func flood_fill(cell: Vector2, max_distance: int) -> Array:
 	var array := []
 	var stack := [cell]
 	while not stack.empty():
@@ -119,7 +121,7 @@ func _clear_active_unit() -> void:
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
-	if is_occupied(new_cell) or not new_cell in _walkable_cells:
+	if (_active_unit.team == PLAYER and (is_occupied(new_cell) or not new_cell in _walkable_cells)):
 		return
 
 	_units.erase(_active_unit.cell)
@@ -153,17 +155,65 @@ func _unhandled_input(event: InputEvent) -> void:
 		_deselect_active_unit()
 		_clear_active_unit()
 
-func temp_enemy_turn():
+#
+# AI-Related Methods
+#
+
+func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
+
+	_select_unit(unit_teams[1][0].cell) # Placeholder code to select the sole enemy unit
+
+	# Idea: Keep passing the current game state to AIBrain until enemy turn is over
+
+	var enemy_action = _ai_brain.calculate_action(get_current_game_state())
+
 	yield(get_tree().create_timer(2.0), "timeout")
 	print("return the turn")
 	for unit in unit_teams[ENEMY]:
 		unit.finished = true;
 	_check_turn_end()
-	return
-	
-	
-	
 
+	return
+
+# Returns the current state of the game as a dictionary
+func get_current_game_state():
+	var game_state = {
+		# Index of the currently active unit in the unit_properties array
+		"active_unit_index": -1,
+		"current_turn": _current_turn,
+		# Holds the index in the unit_properties array of the first enemy unit properties dictionary
+		"enemy_start_index": unit_teams[0].size(),
+		# Array of 2 arrays of dictionaries that will contain relevant properties of units
+		# All of the player unit properties come first, followed by all enemy unit properties
+		"unit_properties": []
+	}
+
+	for team in unit_teams:
+		for unit in team:
+			if (_active_unit == unit):
+				game_state["active_unit_index"] = game_state["unit_properties"].size()
+
+			game_state["unit_properties"].push_back({
+				"cell": unit.cell,
+				"move_range": unit.move_range
+			})
+
+	return game_state
+
+# Method used by the AI to change the currently selected unit to a different one.
+# cell is the cell of the unit to be selected
+# TODO: Check that this actually works when there's more than 1 enemy
+func _on_AIBrain_change_active_unit(cell: Vector2):
+	_deselect_active_unit()
+	_select_unit(cell)
+
+func _on_AIBrain_move(new_cell):
+	_unit_path.draw(_active_unit.cell, new_cell)
+	_move_active_unit(new_cell)
+
+#
+#
+#
