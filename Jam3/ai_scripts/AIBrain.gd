@@ -42,8 +42,7 @@ func _active_unit_is_preferable():
 
 func _move_to_random_spot_in_range():
 	var active_unit_properties = _current_game_state["unit_properties"][_current_game_state["active_unit_index"]]
-	# TODO: Change this to a method that returns the correct set of cells
-	var possible_cells = get_node("..").flood_fill(active_unit_properties["cell"], active_unit_properties["move_range"])
+	var possible_cells = get_node("..").dijkstra(active_unit_properties["cell"], active_unit_properties["move_range"])
 	possible_cells.erase(active_unit_properties["cell"])
 
 	var chosen_cell = possible_cells[randi() % possible_cells.size()]
