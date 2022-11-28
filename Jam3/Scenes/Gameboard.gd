@@ -54,7 +54,7 @@ func _reinitialize():
 		_units[unit.cell] = unit
 		
 func get_walkable_cells(unit: Unit):
-	return _dijkstra(unit.cell, unit.move_range)
+	return dijkstra(unit.cell, unit.move_range)
 	
 func _check_turn_end():
 	for unit in _units.values():
@@ -104,7 +104,7 @@ func flood_fill(cell: Vector2, max_distance: int) -> Array:
 			stack.append(coordinates)
 	return array
 
-func _dijkstra(cell: Vector2, max_distance: int) -> Array:
+func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	var movable_cells = [cell]
 	var visited = []
 	var distances = []
