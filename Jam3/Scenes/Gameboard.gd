@@ -228,6 +228,7 @@ func attack(unitA: Unit, unitB: Unit):
 	else:
 		print("unit A misses")
 
+#
 # remove all references to it in the board, then remove the node
 func _remove_unit(unit: Unit):
 	_units.erase(unit.cell)

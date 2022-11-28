@@ -50,12 +50,10 @@ script = ExtResource( 9 )
 [node name="Unit" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 168.961, 89.7451 )
 skin = ExtResource( 5 )
-move_speed = 100
 
 [node name="Unit2" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 130, 90 )
 skin = ExtResource( 5 )
-move_speed = 100
 
 [node name="EnemyUnit" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 190, 50 )
