@@ -9,10 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "AIBrain",
+"language": "GDScript",
+"path": "res://ai_scripts/AIBrain.gd"
+}, {
 "base": "Node2D",
 "class": "Cursor",
 "language": "GDScript",
 "path": "res://cursor/cursor.gd"
+}, {
+"base": "Reference",
+"class": "DecisionTree",
+"language": "GDScript",
+"path": "res://ai_scripts/DecisionTree.gd"
+}, {
+"base": "Reference",
+"class": "DecisionTreeNode",
+"language": "GDScript",
+"path": "res://ai_scripts/DecisionTreeNode.gd"
 }, {
 "base": "YSort",
 "class": "GameBoard",
@@ -60,7 +75,10 @@ _global_script_classes=[ {
 "path": "res://UnitPath.gd"
 } ]
 _global_script_class_icons={
+"AIBrain": "",
 "Cursor": "",
+"DecisionTree": "",
+"DecisionTreeNode": "",
 "GameBoard": "",
 "Grid": "",
 "LinkedNode": "",
