@@ -251,8 +251,12 @@ func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
-
-	_select_unit(unit_teams[1][0].cell) # Placeholder code to select the sole enemy unit
+	
+	# Placeholder code to select the sole enemy unit
+	for unit in unit_teams[ENEMY].values():
+		_select_unit(unit)
+		break;
+	
 
 	# Idea: Keep passing the current game state to AIBrain until enemy turn is over
 

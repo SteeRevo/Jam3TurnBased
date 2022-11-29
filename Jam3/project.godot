@@ -59,11 +59,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Data Structures/PriorityQueue.gd"
 }, {
-"base": "Node",
-"class": "TurnManager",
-"language": "GDScript",
-"path": "res://Scenes/TurnManager.gd"
-}, {
 "base": "Path2D",
 "class": "Unit",
 "language": "GDScript",
@@ -85,7 +80,6 @@ _global_script_class_icons={
 "Overlay": "",
 "PathFinder": "",
 "PriorityQueue": "",
-"TurnManager": "",
 "Unit": "",
 "UnitPath": ""
 }
