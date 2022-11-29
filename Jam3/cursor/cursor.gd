@@ -14,6 +14,7 @@ var cell := Vector2.ZERO setget set_cell
 onready var _timer: Timer = $Timer
 
 func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	_timer.wait_time = ui_cooldown
 	position = grid.calculate_grid_coordinates(cell)
 	emit_signal("hello")
