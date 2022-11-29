@@ -35,7 +35,7 @@ func select_decision_tree(tree_name: String):
 	# TODO: Implement this
 	pass
 
-# Returns true is the current active unit is the prefarable one to play with, else returns false
+# Returns true if the current active unit is the preferable one to play with, else returns false
 func _active_unit_is_preferable():
 	# TODO: Implement this
 	return true

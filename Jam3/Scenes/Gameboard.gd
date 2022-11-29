@@ -220,7 +220,8 @@ func execute_enemy_turn():
 
 	# Idea: Keep passing the current game state to AIBrain until enemy turn is over
 
-	var enemy_action = _ai_brain.calculate_action(get_current_game_state())
+	# The AIBrain may return something here, but it will mainly use signals for its actions
+	var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
 
 	yield(get_tree().create_timer(2.0), "timeout")
 	print("return the turn")
