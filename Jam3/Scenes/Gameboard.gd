@@ -30,6 +30,8 @@ var _movement_costs
 
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
+onready var _cursor: Cursor = $Cursor
+
 
 onready var _ai_brain = $AIBrain
 
@@ -157,7 +159,7 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 func _select_unit(cell: Vector2) -> void:
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
 		return
-
+	
 	_active_unit = _units[cell]
 	_active_unit.is_selected = true
 	_walkable_cells = get_walkable_cells(_active_unit)
@@ -227,6 +229,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
 	if not _active_unit:
 		_select_unit(cell)
+		_cursor.play_select_sound()
 	elif _active_unit.is_selected:
 		_move_active_unit(cell)
 	elif _selecting_opponent:
