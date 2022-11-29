@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://tilemaps/temp_honey.png" type="Texture" id=1]
 [ext_resource path="res://tilemaps/TileSetExtender.gd" type="Script" id=2]
@@ -12,6 +12,7 @@
 [ext_resource path="res://temp_hornet(evil).png" type="Texture" id=10]
 [ext_resource path="res://ai_scripts/AIBrain.gd" type="Script" id=11]
 [ext_resource path="res://tilemaps/obstacle.png" type="Texture" id=12]
+[ext_resource path="res://Scenes/Camera2D.gd" type="Script" id=13]
 
 [sub_resource type="TileSet" id=1]
 0/name = "temp_honey.png 0"
@@ -68,6 +69,21 @@ movement_data = {
 script = ExtResource( 9 )
 
 [node name="Cursor" parent="Gameboard" instance=ExtResource( 7 )]
+
+[node name="Camera2D" type="Camera2D" parent="Gameboard/Cursor"]
+current = true
+drag_margin_left = 0.31
+drag_margin_top = 0.29
+drag_margin_right = 0.29
+drag_margin_bottom = 0.36
+script = ExtResource( 13 )
+
+[node name="Limits" type="Node" parent="Gameboard/Cursor/Camera2D"]
+
+[node name="TopLeft" type="Position2D" parent="Gameboard/Cursor/Camera2D/Limits"]
+
+[node name="BottomRight" type="Position2D" parent="Gameboard/Cursor/Camera2D/Limits"]
+position = Vector2( 400.973, 401.713 )
 
 [node name="Overlay" parent="Gameboard" instance=ExtResource( 6 )]
 
