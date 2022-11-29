@@ -8,17 +8,17 @@ extends Reference
 # Every internal node of the array has the following format: [<data>, [<node if true>], [<node if false>]]
 # Every leaf node will have the following format: [<data>]
 # <data> is either a string for an Expression object or a FuncRef object.
-# 
+#
 # For internal nodes, <data> should always return true or false when evaluated.
-# 
+#
 # For leaf nodes, <data> should indicate an action to be done. This might be represented as a
 # FuncRef for a method in the provided base_instance object. It may also be a string for an
-# Expression object. This may optionally return something, which will be returned when the entire
-# tree is evaluated.
+# Expression object. This may optionally return something, which will be returned when the tree is
+# evaluated.
 
 var root_node
 # The object instance in which expressions and function references will be executed with respect to.
-var _my_base_instance 
+var _my_base_instance
 
 # Constructor
 func _init(tree_data, base_instance):
@@ -35,7 +35,7 @@ func _set_up_node(tree_node: DecisionTreeNode, tree_data):
 		printerr("Incorrect number of elements for node in decision tree input:\n", tree_data)
 		print(tree_data.size())
 		return
-	
+
 	# Set the current node's data
 	var data = tree_data[0]
 	if (typeof(data) == TYPE_STRING):
