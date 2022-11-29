@@ -14,16 +14,16 @@ var cell := Vector2.ZERO setget set_cell
 onready var _timer: Timer = $Timer
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	_timer.wait_time = ui_cooldown
 	position = grid.calculate_grid_coordinates(cell)
 	emit_signal("hello")
 	
 func _unhandled_input(event):
-	if event is InputEventMouseMotion:
-		self.cell = grid.calculate_grid_coordinates(event.position)
-		print(event.position)
+	#if event is InputEventMouseMotion:
+	#	self.cell = grid.calculate_grid_coordinates(event.position)
+	#	print(event.position)
 		
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("click"):
 		

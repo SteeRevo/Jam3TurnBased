@@ -72,12 +72,10 @@ script = ExtResource( 9 )
 
 [node name="Camera2D" type="Camera2D" parent="Gameboard/Cursor"]
 current = true
-drag_margin_h_enabled = true
-drag_margin_v_enabled = true
-drag_margin_left = 0.75
-drag_margin_top = 0.75
-drag_margin_right = 0.75
-drag_margin_bottom = 0.83
+drag_margin_left = 0.31
+drag_margin_top = 0.29
+drag_margin_right = 0.29
+drag_margin_bottom = 0.36
 script = ExtResource( 13 )
 
 [node name="Limits" type="Node" parent="Gameboard/Cursor/Camera2D"]
