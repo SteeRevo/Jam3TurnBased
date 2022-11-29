@@ -326,7 +326,7 @@ func get_current_game_state():
 	}
 
 	for team in unit_teams:
-		for unit in team:
+		for unit in team.values():
 			if (_active_unit == unit):
 				game_state["active_unit_index"] = game_state["unit_properties"].size()
 
