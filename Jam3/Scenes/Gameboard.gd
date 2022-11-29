@@ -6,6 +6,7 @@ enum {PLAYER, ENEMY}
 const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 export var grid: Resource = preload("res://Grid.tres")
+onready var _fight_scene: Resource = preload("res://Scenes/CombatSceneLayer.tscn")
 
 onready var _unit_overlay: Overlay = $Overlay
 
@@ -31,7 +32,6 @@ var _movement_costs
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
-
 
 onready var _ai_brain = $AIBrain
 
@@ -257,7 +257,7 @@ func execute_enemy_turn():
 	print("enemy makes some plays...")
 	
 	# Placeholder code to select the sole enemy unit
-	for unit in unit_teams[ENEMY].values():
+	for unit in unit_teams[ENEMY].keys():
 		_select_unit(unit)
 		break;
 	
@@ -289,8 +289,14 @@ func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 	
 # A attacks B
 func attack(unitA: Unit, unitB: Unit):
+	# instance fight scene
+	var instance = _fight_scene.instance()
+	add_child(instance)
+	
 	var roll = rng.randf()
 	if roll < unitA.hit_rate:
+		instance.playHit(1.0)
+		
 		# not factoring in def, evasion for now
 		print("unit A hits for ", unitA.attack)
 		unitB.health -= unitA.attack
@@ -299,7 +305,10 @@ func attack(unitA: Unit, unitB: Unit):
 			print("unit B is defeated!")
 			_remove_unit(unitB)
 	else:
+		instance.playMiss(1.0)
 		print("unit A misses")
+	yield(get_tree().create_timer(1.4), "timeout")
+	instance.queue_free()
 
 #
 # remove all references to it in the board, then remove the node
@@ -307,13 +316,6 @@ func _remove_unit(unit: Unit):
 	_units.erase(unit.cell)
 	unit_teams[unit.team].erase(unit.cell)
 	unit.queue_free()
-	
-	
-	
-	
-	
-	
-
 	return
 
 # Returns the current state of the game as a dictionary
