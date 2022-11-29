@@ -14,7 +14,8 @@ var cell := Vector2.ZERO setget set_cell
 onready var _timer: Timer = $Timer
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
 	_timer.wait_time = ui_cooldown
 	position = grid.calculate_grid_coordinates(cell)
 	emit_signal("hello")
@@ -22,6 +23,7 @@ func _ready():
 func _unhandled_input(event):
 	if event is InputEventMouseMotion:
 		self.cell = grid.calculate_grid_coordinates(event.position)
+		print(event.position)
 		
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("click"):
 		
@@ -44,17 +46,19 @@ func _unhandled_input(event):
 		self.cell += Vector2.LEFT
 	elif event.is_action("ui_down"):
 		self.cell += Vector2.DOWN
-		
-		
+	
+
 func _draw():
 	draw_rect(Rect2(-grid.cell_size / 2, grid.cell_size), Color.aliceblue, false, 2.0)
 
 func set_cell(value: Vector2):
-	var new_cell: Vector2 = grid.clamp(value)
-	if new_cell.is_equal_approx(cell):
-		return
-	
-	cell = new_cell
+	print(value)
+	print(grid.is_within_bounds(value))
+	if not grid.is_within_bounds(value):
+		print("here")
+		cell = grid.clamp(value)
+	else:
+		cell = value
 	
 	position = grid.calculate_map_position(cell)
 	emit_signal("moved", cell)
