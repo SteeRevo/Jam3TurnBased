@@ -239,6 +239,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _active_unit and event.is_action_pressed("ui_cancel"):
 		if _active_unit.is_selected:
+			_cursor.play_deselect_sound()
 			_deselect_active_unit()
 			_clear_active_unit()
 		# press esc while choosing opponents to choose no opponent (not fight)
