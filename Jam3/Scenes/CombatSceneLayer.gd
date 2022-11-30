@@ -1,25 +1,40 @@
 extends CanvasLayer
 
-onready var attacker = $AttackerActor
-onready var hit_dest = $HitDest
-onready var miss_dest = $MissDest
-onready var label = $ActionLabel
+onready var bee := $BeeActor
+onready var wasp := $WaspActor
+onready var label := $ActionLabel
 # ^ this is syntactic sugar for
 #func _ready():
 #  attacker = get_node("AttackerActor")
 #  destination = get_node("Destination")
+var attacker := bee
+var target := wasp
+var endpoint := Vector2(0, 0)
+var atkname := "BEE"
 
-func _ready():
-	#playAttack()
-	pass
+enum {PLAYER, ENEMY}
 
-func playHit(time: float):
-	label.text = "Bee hit!"
-	var tween := create_tween()
-	tween.tween_property(attacker, "global_position", hit_dest.position, time)
+func _setup(attackingSide: int, y_offset: int):
+	if attackingSide == PLAYER:
+		attacker = bee
+		target = wasp
+		atkname = "BEE"
+		endpoint = Vector2(target.position.x + 40, target.position.y + y_offset)
+	else:
+		attacker = wasp
+		target = bee
+		atkname = "WASP"
+		endpoint = Vector2(target.position.x - 40, target.position.y + y_offset)
 	
-func playMiss(time: float):
-	label.text = "Bee missed!"
-	var tween := create_tween()
-	tween.tween_property(attacker, "global_position", miss_dest.position, time)
+func playHit(time: float, attackingSide: int):
+	_setup(attackingSide, 0)
+	label.text = "%s Hit!" % atkname
+	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(attacker, "global_position", endpoint, time)
+	
+func playMiss(time: float, attackingSide: int):
+	_setup(attackingSide, -40)
+	label.text = "%s Missed!" % atkname
+	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(attacker, "global_position", endpoint, time)
 

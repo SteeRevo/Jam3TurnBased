@@ -76,6 +76,7 @@ func _set_turn(turn):
 	_current_turn = turn
 	print("turn: %s" % _current_turn)
 	# reset all units of the next player to ready
+	print(unit_teams[_current_turn])
 	for unit in unit_teams[_current_turn].values():
 		unit.finished = false
 	
@@ -295,8 +296,7 @@ func attack(unitA: Unit, unitB: Unit):
 	
 	var roll = rng.randf()
 	if roll < unitA.hit_rate:
-		instance.playHit(1.0)
-		
+		instance.playHit(1.0, _current_turn)
 		# not factoring in def, evasion for now
 		print("unit A hits for ", unitA.attack)
 		unitB.health -= unitA.attack
@@ -305,9 +305,11 @@ func attack(unitA: Unit, unitB: Unit):
 			print("unit B is defeated!")
 			_remove_unit(unitB)
 	else:
-		instance.playMiss(1.0)
+		instance.playMiss(1.0, _current_turn)
+	
+		
 		print("unit A misses")
-	yield(get_tree().create_timer(1.4), "timeout")
+	yield(get_tree().create_timer(1.4), "timeout")	
 	instance.queue_free()
 
 #
