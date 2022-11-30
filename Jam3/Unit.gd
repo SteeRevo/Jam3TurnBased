@@ -37,6 +37,8 @@ func _ready():
 	self.cell = grid.calculate_grid_coordinates(position)
 	position = grid.calculate_map_position(cell)
 	
+	anim_player.play("idle")
+	
 	if not Engine.editor_hint:
 		curve = Curve2D.new()
 		
