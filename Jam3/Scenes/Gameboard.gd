@@ -8,6 +8,7 @@ const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 export var grid: Resource = preload("res://Grid.tres")
 onready var _fight_scene: Resource = preload("res://Scenes/CombatSceneLayer.tscn")
 
+
 onready var _unit_overlay: Overlay = $Overlay
 
 var rng = RandomNumberGenerator.new()
@@ -82,8 +83,11 @@ func _set_turn(turn):
 	
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
-	if _current_turn == ENEMY:
+	print(len(unit_teams[ENEMY]))
+	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
+	elif len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	
 func flood_fill(cell: Vector2, max_distance: int) -> Array:
 	var array := []
@@ -216,6 +220,8 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
+	if len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	_check_turn_end()
 	
 
@@ -303,7 +309,10 @@ func attack(unitA: Unit, unitB: Unit):
 		print("unit B health: ", unitB.health)
 		if unitB.health <= 0:
 			print("unit B is defeated!")
+			
 			_remove_unit(unitB)
+			print("remain enemy ", len(unit_teams[ENEMY]))
+			change_scene()
 	else:
 		instance.playMiss(1.0, _current_turn)
 	
@@ -318,6 +327,7 @@ func _remove_unit(unit: Unit):
 	_units.erase(unit.cell)
 	unit_teams[unit.team].erase(unit.cell)
 	unit.queue_free()
+	print("removed unit")
 	return
 
 # Returns the current state of the game as a dictionary
@@ -353,9 +363,14 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 	_select_unit(cell)
 
 func _on_AIBrain_move(new_cell):
+	print("new cell", new_cell)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 
 #
 #
 #
+func change_scene():
+	if len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
+	return

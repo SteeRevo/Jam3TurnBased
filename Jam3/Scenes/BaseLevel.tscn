@@ -111,6 +111,7 @@ skin = ExtResource( 5 )
 position = Vector2( 190, 50 )
 skin = ExtResource( 10 )
 team = 1
+health = 3
 
 [node name="UnitPath" parent="Gameboard" instance=ExtResource( 8 )]
 
