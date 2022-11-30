@@ -36,6 +36,7 @@ onready var _cursor: Cursor = $Cursor
 onready var _ai_brain = $AIBrain
 
 signal choose_opponent
+signal action_completed # Mainly used to indicate when the AIBrain can calculate its next action
 
 func _ready():
 	_movement_costs = _map.get_movement_costs(grid)
@@ -186,13 +187,17 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_units.erase(_active_unit.cell)
 	_units[new_cell] = _active_unit
 	
+	# Update unit_teams
+	unit_teams[_active_unit.team].erase(_active_unit.cell)
+	unit_teams[_active_unit.team][new_cell] = _active_unit
+	
 	_deselect_active_unit()
 	_active_unit.walk_along(_unit_path.current_path)
 	yield(_active_unit, "walk_finished")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
 	var avail_opponents = _get_adjacent_units(_active_unit.cell, 1 - _current_turn)
-	if avail_opponents.size() > 0:
+	if avail_opponents.size() > 0 and _current_turn == PLAYER: # TODO: Remove "_current_turn == PLAYER"
 		_unit_overlay.draw(avail_opponents.keys())
 		_selecting_opponent = true
 		var opp = yield(self, "choose_opponent")
@@ -215,6 +220,9 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
+
+	emit_signal("action_completed")
+
 	_check_turn_end()
 	
 
@@ -256,23 +264,42 @@ func execute_enemy_turn():
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
 	
-	# Placeholder code to select the sole enemy unit
-	for unit in unit_teams[ENEMY].values():
-		_select_unit(unit.cell)
-		break;
+	# Failsafe in case this method is called with no enemy units remaining
+	if (unit_teams[ENEMY].values().size() == 0):
+		printerr("No enemy units remain!")
+		_check_turn_end()
+		return
 	
+	# Select an enemy unit
+	_select_unit(unit_teams[ENEMY].values()[0].cell)
+	#var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
 
-	# Idea: Keep passing the current game state to AIBrain until enemy turn is over
+	# Keep passing the current game state to AIBrain until enemy turn is over
+	while (true):
+		# The AIBrain may return something here, but it will mainly use signals for its actions
+		var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
+		
+		# Yield to allow animations to finish
+		yield(self, "action_completed")
 
-	# The AIBrain may return something here, but it will mainly use signals for its actions
-	var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
+		# Current unit still in play or different unit was selected; keep passing game state to
+		# AIBrain
+		if (_active_unit != null and not _active_unit.finished):
+			continue
 
-	yield(get_tree().create_timer(2.0), "timeout")
-	print("return the turn")
-	for unit in unit_teams[ENEMY].values():
-		unit.finished = true;
+		# If at least one enemy unit can still act and one wasn't selected by AIBrain, select the
+		# next available one
+		for unit in unit_teams[ENEMY].values():
+			if (not unit.finished):
+				_select_unit(unit.cell)
+				break
+		
+		# No enemy units were eligible to be selected
+		if (_active_unit == null):
+			break
+
+	# Player's turn now
 	_check_turn_end()
-	return
 	
 func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 	# get the units that are adjacent to the given cell and are on the given 
@@ -336,7 +363,12 @@ func get_current_game_state():
 
 			game_state["unit_properties"].push_back({
 				"cell": unit.cell,
-				"move_range": unit.move_range
+				"move_range": unit.move_range,
+				"health": unit.health,
+				"attack": unit.attack,
+				"defense": unit.defense,
+				"hit_rate": unit.hit_rate,
+				"evasion": unit.evasion
 			})
 
 	return game_state
