@@ -258,7 +258,7 @@ func execute_enemy_turn():
 	
 	# Placeholder code to select the sole enemy unit
 	for unit in unit_teams[ENEMY].values():
-		_select_unit(unit)
+		_select_unit(unit.cell)
 		break;
 	
 
