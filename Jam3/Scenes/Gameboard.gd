@@ -31,6 +31,7 @@ var _movement_costs
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
+onready var _enemy_camera: Camera2D = $EnemyCam
 
 
 onready var _ai_brain = $AIBrain
@@ -46,6 +47,7 @@ func is_occupied(cell: Vector2):
 	return true if _units.has(cell) else false
 	
 func _reinitialize():
+	$Cursor/Camera2D.current = true
 	_units.clear()
 	
 	for child in get_children():
@@ -70,12 +72,14 @@ func _check_turn_end():
 			return
 	# flips the turn between 1 and 0
 	_set_turn(1 - _current_turn)
-	
+		
 	
 func _set_turn(turn):
 	_current_turn = turn
 	print("turn: %s" % _current_turn)
 	# reset all units of the next player to ready
+	_enemy_camera.current = false
+	$Cursor/Camera2D.current = true
 	for unit in unit_teams[_current_turn].values():
 		unit.finished = false
 	
@@ -160,6 +164,7 @@ func _select_unit(cell: Vector2) -> void:
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
 		return
 	
+	_enemy_camera.current = false
 	_active_unit = _units[cell]
 	_active_unit.is_selected = true
 	_walkable_cells = get_walkable_cells(_active_unit)
@@ -211,7 +216,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 			print(_active_unit, " fights ", avail_opponents[opp])
 			attack(_active_unit, avail_opponents[opp])
 
-	
+
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
@@ -255,11 +260,16 @@ func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
+	$Cursor/Camera2D.current = false
+	_enemy_camera.current = true
 	
 	# Placeholder code to select the sole enemy unit
 	for unit in unit_teams[ENEMY].values():
 		_select_unit(unit.cell)
 		break;
+	
+	
+	_enemy_camera.current = true
 	
 
 	# Idea: Keep passing the current game state to AIBrain until enemy turn is over

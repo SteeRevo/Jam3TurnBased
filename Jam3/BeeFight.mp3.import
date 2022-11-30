@@ -12,4 +12,4 @@ dest_files=[ "res://.import/BeeFight.mp3-c6d0e5bdf8d51464b0be8bf934273baa.mp3str
 [params]
 
 loop=true
-loop_offset=0
+loop_offset=-2.0
