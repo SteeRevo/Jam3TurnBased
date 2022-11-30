@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/BeeFight.mp3-c6d0e5bdf8d51464b0be8bf934273baa.mp3str"
+
+[deps]
+
+source_file="res://BeeFight.mp3"
+dest_files=[ "res://.import/BeeFight.mp3-c6d0e5bdf8d51464b0be8bf934273baa.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
