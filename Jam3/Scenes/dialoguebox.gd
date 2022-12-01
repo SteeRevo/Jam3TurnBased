@@ -6,12 +6,12 @@ export(float) var textSpeed = 0.05
 # From Dialog Tutorial at https://youtu.be/GzPvN5wsp7Y
 # Tutorial written by use Afely
 
-var dialog
+var dialog: Array
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var phraseNum = 0
-var finished = false
+var phraseNum := 0
+var finished := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -46,6 +46,7 @@ func getDialog() -> Array:
 func nextPhrase() -> void:
 	if phraseNum >= len(dialog):
 		queue_free()
+		start_game()
 		return
 		
 	finished = false
@@ -63,6 +64,6 @@ func nextPhrase() -> void:
 	finished = true
 	phraseNum += 1
 	return
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+
+func start_game():
+	get_tree().change_scene("res://Scenes/BaseLevel.tscn")

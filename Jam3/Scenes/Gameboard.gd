@@ -252,6 +252,32 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	_check_turn_end()
 	
+# A attacks B
+func attack(unitA: Unit, unitB: Unit):
+	# instance fight scene
+	var instance = _fight_scene.instance()
+	add_child(instance)
+	
+	var roll = rng.randf()
+	if roll < unitA.hit_rate:
+		instance.playHit(1.0, _current_turn)
+		# not factoring in def, evasion for now
+		print("unit A hits for ", unitA.attack)
+		unitB.health -= unitA.attack
+		print("unit B health: ", unitB.health)
+		if unitB.health <= 0:
+			print("unit B is defeated!")
+			
+			_remove_unit(unitB)
+			print("remain enemy ", len(unit_teams[ENEMY]))
+			change_scene()
+	else:
+		instance.playMiss(1.0, _current_turn)
+	
+		
+		print("unit A misses")
+	yield(get_tree().create_timer(3), "timeout")	
+	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
@@ -351,33 +377,6 @@ func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 				adj[loc] = _units[loc]
 	return adj
 	
-# A attacks B
-func attack(unitA: Unit, unitB: Unit):
-	# instance fight scene
-	var instance = _fight_scene.instance()
-	add_child(instance)
-	
-	var roll = rng.randf()
-	if roll < unitA.hit_rate:
-		instance.playHit(1.0, _current_turn)
-		# not factoring in def, evasion for now
-		print("unit A hits for ", unitA.attack)
-		unitB.health -= unitA.attack
-		print("unit B health: ", unitB.health)
-		if unitB.health <= 0:
-			print("unit B is defeated!")
-			
-			_remove_unit(unitB)
-			print("remain enemy ", len(unit_teams[ENEMY]))
-			change_scene()
-	else:
-		instance.playMiss(1.0, _current_turn)
-	
-		
-		print("unit A misses")
-	yield(get_tree().create_timer(3), "timeout")	
-	instance.queue_free()
-
 #
 # remove all references to it in the board, then remove the node
 func _remove_unit(unit: Unit):
