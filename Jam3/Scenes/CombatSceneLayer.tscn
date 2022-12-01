@@ -3,7 +3,7 @@
 [ext_resource path="res://temp_hornet(evil).png" type="Texture" id=1]
 [ext_resource path="res://resized2_beeSmall_attack.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/CombatSceneLayer.gd" type="Script" id=3]
-[ext_resource path="res://resized_attackbanner_spritesheet.png" type="Texture" id=4]
+[ext_resource path="res://attackbanner_spritesheet.png" type="Texture" id=4]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Hit"
@@ -90,8 +90,8 @@ text = "Bee Hits!"
 align = 1
 
 [node name="HitAnim" type="Sprite" parent="."]
-position = Vector2( 162, 87 )
-scale = Vector2( 0.6, 0.6 )
+position = Vector2( 160, 90 )
+scale = Vector2( 0.175, 0.175 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 4
