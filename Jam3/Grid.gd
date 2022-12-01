@@ -22,7 +22,6 @@ func is_within_bounds(cell_coordinates: Vector2) -> bool:
 	return output
 	
 func clamp(grid_position: Vector2) -> Vector2:
-	
 	var output := grid_position
 	output.x = clamp(output.x, 0, size.x - 1.0)
 	output.y = clamp(output.y, 0, size.y - 1.0)

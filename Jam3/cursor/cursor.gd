@@ -58,10 +58,9 @@ func _draw():
 	draw_rect(Rect2(-grid.cell_size / 2, grid.cell_size), Color.aliceblue, false, 2.0)
 
 func set_cell(value: Vector2):
-	
-	
+
 	if not grid.is_within_bounds(value):
-		
+
 		cell = grid.clamp(value)
 	else:
 		cell = value
