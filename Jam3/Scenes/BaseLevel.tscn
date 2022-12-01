@@ -225,7 +225,10 @@ volume_db = 1.0
 [node name="Unit" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 91.3586, 88.6674 )
 skin = ExtResource( 16 )
-health = 4
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Sprite" parent="Gameboard/Unit/PathFollow2D" index="0"]
 modulate = Color( 1, 1, 1, 1 )
@@ -243,6 +246,10 @@ anims/selected = SubResource( 3 )
 [node name="Unit2" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 71.7367, 111.262 )
 skin = ExtResource( 16 )
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Sprite" parent="Gameboard/Unit2/PathFollow2D" index="0"]
 modulate = Color( 1, 1, 1, 1 )
@@ -261,27 +268,46 @@ anims/selected = SubResource( 7 )
 position = Vector2( 127.611, 67.3726 )
 skin = ExtResource( 10 )
 team = 1
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Enemy2" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 351, 190 )
 skin = ExtResource( 10 )
 team = 1
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Enemy3" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 332, 350 )
 skin = ExtResource( 10 )
 team = 1
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Enemy4" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 49, 290 )
 skin = ExtResource( 10 )
 team = 1
+health = 5
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="Enemy5" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 372, 169 )
 skin = ExtResource( 10 )
 team = 1
 health = 3
+max_health = 5
+attack = 2
+defense = 2
 
 [node name="UnitPath" parent="Gameboard" instance=ExtResource( 8 )]
 

@@ -260,11 +260,14 @@ func attack(unitA: Unit, unitB: Unit):
 	
 	var roll = rng.randf()
 	if roll < unitA.hit_rate:
-		instance.playHit(1.0, _current_turn)
-		# not factoring in def, evasion for now
+		var prev_health = unitB.health
+		# not factoring in evasion for now
 		print("unit A hits for ", unitA.attack)
-		unitB.health -= unitA.attack
+		# defense cannot block an entire attack with this formula: https://rpg.fandom.com/wiki/Damage_Formula
+		unitB.health -= unitA.attack#*(10 / (10 + unitB.defense))
 		print("unit B health: ", unitB.health)
+		instance.playHit(1.0, _current_turn, unitA, unitB, prev_health, unitB.health)
+		yield(get_tree().create_timer(1), "timeout")
 		if unitB.health <= 0:
 			print("unit B is defeated!")
 			
@@ -272,11 +275,11 @@ func attack(unitA: Unit, unitB: Unit):
 			print("remain enemy ", len(unit_teams[ENEMY]))
 			change_scene()
 	else:
-		instance.playMiss(1.0, _current_turn)
+		instance.playMiss(1.0, _current_turn, unitA, unitB)
 	
 		
 		print("unit A misses")
-	yield(get_tree().create_timer(3), "timeout")	
+	yield(get_tree().create_timer(2), "timeout")	
 	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:

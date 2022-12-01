@@ -2,6 +2,8 @@ extends CanvasLayer
 
 onready var bee := $BeeActor
 onready var wasp := $WaspActor
+onready var bee_health := $BeeHealth
+onready var wasp_health := $WaspHealth
 onready var label := $ActionLabel
 onready var hit_anim = $HitAnim
 onready var anim_player = $AnimationPlayer
@@ -11,36 +13,65 @@ onready var anim_player = $AnimationPlayer
 #  destination = get_node("Destination")
 var attacker := bee
 var target := wasp
+var target_hlth := wasp_health
 var endpoint := Vector2(0, 0)
 var atkname := "BEE"
 
 enum {PLAYER, ENEMY}
 
-func _setup(attackingSide: int, y_offset: int):
+func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 	if attackingSide == PLAYER:
 		attacker = bee
 		target = wasp
 		atkname = "BEE"
 		endpoint = Vector2(target.position.x + 40, target.position.y + y_offset)
+		bee_health.value = unitA.health
+		bee_health.max_value = unitA.max_health
+		wasp_health.max_value = unitB.max_health
 	else:
 		attacker = wasp
 		target = bee
 		atkname = "WASP"
 		endpoint = Vector2(target.position.x - 40, target.position.y + y_offset)
+		wasp_health.value = unitA.health
+		wasp_health.max_value = unitA.max_health
+		bee_health.max_value = unitB.max_health
 	
-func playHit(time: float, attackingSide: int):
-	hit_anim.visible = true
-	_setup(attackingSide, 0)
+	
+func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_health: int, new_health):
+	hit_anim.visible = false
+	_setup(attackingSide, 0, unitA, unitB)
 	label.text = "%s Hit!" % atkname
-	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tween.tween_property(attacker, "global_position", endpoint, time)
-	yield(get_tree().create_timer(1), "timeout")
+	var action_tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	
+	action_tween.tween_property(attacker, "global_position", endpoint, time)
+
+	
+	if (attackingSide == PLAYER):
+		wasp_health.value = prev_health
+		yield(get_tree().create_timer(0.9), "timeout")
+		$Tween.interpolate_property(wasp_health, "value", prev_health, unitB.health, 0.5, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+		$Tween.start()
+		#health_tween.tween_property(wasp_health, "", unitB.health, time)
+	else:
+		bee_health.value = prev_health
+		yield(get_tree().create_timer(0.9), "timeout")
+		$Tween.interpolate_property(bee_health, "value", prev_health, unitB.health, 0.5, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+		$Tween.start()
+		
+	#yield(get_tree().create_timer(0.4), "timeout")
+	hit_anim.visible = true
 	anim_player.play("Hit")
 	
 	
-func playMiss(time: float, attackingSide: int):
+func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	hit_anim.visible = false
-	_setup(attackingSide, -40)
+	_setup(attackingSide, -40, unitA, unitB)
+	if attackingSide == PLAYER:
+		wasp_health.value = unitB.health
+	else:
+		bee_health.value = unitB.health
+	
 	label.text = "%s Missed!" % atkname
 	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_property(attacker, "global_position", endpoint, time)
