@@ -360,7 +360,11 @@ func get_current_game_state():
 		"enemy_start_index": unit_teams[0].size(),
 		# Array of 2 arrays of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
-		"unit_properties": []
+		"unit_properties": [],
+		# A reference to the tilemap. This should not be written to by AIBrain.
+		"tilemap": _map,
+		# A reference to the tilemap's grid. This should not be written to by AIBrain.
+		"grid": grid,
 	}
 
 	for team in unit_teams:
@@ -375,7 +379,8 @@ func get_current_game_state():
 				"attack": unit.attack,
 				"defense": unit.defense,
 				"hit_rate": unit.hit_rate,
-				"evasion": unit.evasion
+				"evasion": unit.evasion,
+				"is_queen": unit == $Unit # TODO: Change this if needed
 			})
 
 	return game_state
@@ -390,6 +395,10 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 func _on_AIBrain_move(new_cell):
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
+
+func _on_AIBrain_skip_turn():
+	# TODO: Implement this
+	pass
 
 #
 #
