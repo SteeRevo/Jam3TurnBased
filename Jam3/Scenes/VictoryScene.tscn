@@ -1,0 +1,15 @@
+[gd_scene format=2]
+
+[node name="VictoryScene" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 321.0
+margin_bottom = 180.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ColorRect"]
+margin_left = 117.0
+margin_top = 52.0
+margin_right = 272.0
+margin_bottom = 108.0
+text = "YOU WIN"

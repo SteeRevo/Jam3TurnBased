@@ -6,6 +6,8 @@ enum {PLAYER, ENEMY}
 const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 export var grid: Resource = preload("res://Grid.tres")
+onready var _fight_scene: Resource = preload("res://Scenes/CombatSceneLayer.tscn")
+
 
 onready var _unit_overlay: Overlay = $Overlay
 
@@ -32,7 +34,6 @@ onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
 onready var _enemy_camera: Camera2D = $EnemyCam
-
 
 onready var _ai_brain = $AIBrain
 
@@ -86,8 +87,11 @@ func _set_turn(turn):
 	
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
-	if _current_turn == ENEMY:
+	print(len(unit_teams[ENEMY]))
+	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
+	elif len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	
 func flood_fill(cell: Vector2, max_distance: int) -> Array:
 	var array := []
@@ -228,6 +232,8 @@ func _move_active_unit(new_cell: Vector2) -> void:
 
 	emit_signal("action_completed")
 
+	if len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	_check_turn_end()
 	
 
@@ -323,17 +329,30 @@ func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 	
 # A attacks B
 func attack(unitA: Unit, unitB: Unit):
+	# instance fight scene
+	var instance = _fight_scene.instance()
+	add_child(instance)
+	
 	var roll = rng.randf()
 	if roll < unitA.hit_rate:
+		instance.playHit(1.0, _current_turn)
 		# not factoring in def, evasion for now
 		print("unit A hits for ", unitA.attack)
 		unitB.health -= unitA.attack
 		print("unit B health: ", unitB.health)
 		if unitB.health <= 0:
 			print("unit B is defeated!")
+			
 			_remove_unit(unitB)
+			print("remain enemy ", len(unit_teams[ENEMY]))
+			change_scene()
 	else:
+		instance.playMiss(1.0, _current_turn)
+	
+		
 		print("unit A misses")
+	yield(get_tree().create_timer(1.4), "timeout")	
+	instance.queue_free()
 
 #
 # remove all references to it in the board, then remove the node
@@ -341,13 +360,7 @@ func _remove_unit(unit: Unit):
 	_units.erase(unit.cell)
 	unit_teams[unit.team].erase(unit.cell)
 	unit.queue_free()
-	
-	
-	
-	
-	
-	
-
+	print("removed unit")
 	return
 
 # Returns the current state of the game as a dictionary
@@ -388,9 +401,14 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 	_select_unit(cell)
 
 func _on_AIBrain_move(new_cell):
+	print("new cell", new_cell)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 
 #
 #
 #
+func change_scene():
+	if len(unit_teams[ENEMY]) == 0:
+		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
+	return

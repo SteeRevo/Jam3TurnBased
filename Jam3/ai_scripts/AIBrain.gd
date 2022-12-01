@@ -46,6 +46,7 @@ func _move_to_random_spot_in_range():
 	possible_cells.erase(active_unit_properties["cell"])
 
 	var chosen_cell = possible_cells[randi() % possible_cells.size()]
+	print("here are chosen cells ", chosen_cell)
 	emit_signal("move", chosen_cell)
 
 # TODO: Delete this method later
