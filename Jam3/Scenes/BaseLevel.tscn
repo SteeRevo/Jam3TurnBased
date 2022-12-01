@@ -16,7 +16,7 @@
 [ext_resource path="res://mixkit-video-game-retro-click-237.wav" type="AudioStream" id=14]
 [ext_resource path="res://mixkit-player-jumping-in-a-video-game-2043.wav" type="AudioStream" id=15]
 [ext_resource path="res://beeSmall_Spritesheet.png" type="Texture" id=16]
-[ext_resource path="res://BeeFight.mp3" type="AudioStream" id=18]
+[ext_resource path="res://BeeFight.ogg" type="AudioStream" id=17]
 
 [sub_resource type="Animation" id=4]
 length = 0.001
@@ -258,7 +258,7 @@ anims/idle = SubResource( 6 )
 anims/selected = SubResource( 7 )
 
 [node name="Enemy1" parent="Gameboard" instance=ExtResource( 4 )]
-position = Vector2( 349, 50 )
+position = Vector2( 127.611, 67.3726 )
 skin = ExtResource( 10 )
 team = 1
 
@@ -334,7 +334,7 @@ margin_right = 51.6672
 margin_bottom = 32.3848
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 18 )
+stream = ExtResource( 17 )
 volume_db = -7.866
 autoplay = true
 

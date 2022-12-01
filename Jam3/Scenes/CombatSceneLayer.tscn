@@ -91,6 +91,7 @@ text = "Bee Hits!"
 align = 1
 
 [node name="HitAnim" type="Sprite" parent="."]
+visible = false
 position = Vector2( 160, 90 )
 scale = Vector2( 0.175, 0.175 )
 texture = ExtResource( 4 )

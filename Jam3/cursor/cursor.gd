@@ -14,6 +14,7 @@ var cell := Vector2.ZERO setget set_cell
 onready var _move_sound = $MoveCursorSound
 onready var _select_sound = $SelectCursorSound
 onready var _timer: Timer = $Timer
+onready var not_movable = false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -26,6 +27,9 @@ func _unhandled_input(event):
 	#if event is InputEventMouseMotion:
 	#	self.cell = grid.calculate_grid_coordinates(event.position)
 	#	print(event.position)
+	
+	if not_movable:
+		return
 		
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("click"):
 
@@ -39,6 +43,8 @@ func _unhandled_input(event):
 	
 	if not should_move:
 		return
+	
+	
 	
 	if event.is_action("ui_right"):
 		self.cell += Vector2.RIGHT

@@ -87,7 +87,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Jam 3"
-run/main_scene="res://Scenes/intro.tscn"
+run/main_scene="res://Scenes/BaseLevel.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -97,6 +97,10 @@ window/size/height=180
 window/size/test_width=1280
 window/size/test_height=720
 window/stretch/mode="2d"
+
+[global]
+
+scene=false
 
 [input]
 

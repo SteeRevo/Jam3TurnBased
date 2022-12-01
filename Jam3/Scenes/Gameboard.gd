@@ -175,10 +175,11 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	return movable_cells
 
 func _select_unit(cell: Vector2) -> void:
-	if _units.has(cell) and _units[cell].team == 1:
+	if _units.has(cell) and _units[cell].team == 1 and _current_turn != 1:
 		enemy_ui_on = true
 		_init_enemy_UI(cell)
 		return
+		
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
 		return
 	
@@ -293,8 +294,11 @@ func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
+	_cursor.not_movable = true
+	
 	$Cursor/Camera2D.current = false
 	_enemy_camera.current = true
+	yield(get_tree().create_timer(3.5), "timeout")
 
 	# Failsafe in case this method is called with no enemy units remaining
 	if (unit_teams[ENEMY].values().size() == 0):
@@ -331,6 +335,7 @@ func execute_enemy_turn():
 			break
 
 	# Player's turn now
+	_cursor.not_movable = false
 	_check_turn_end()
 
 func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
@@ -370,7 +375,7 @@ func attack(unitA: Unit, unitB: Unit):
 	
 		
 		print("unit A misses")
-	yield(get_tree().create_timer(1.4), "timeout")	
+	yield(get_tree().create_timer(3), "timeout")	
 	instance.queue_free()
 
 #
@@ -422,6 +427,7 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 
 func _on_AIBrain_move(new_cell):
 	print("new cell", new_cell)
+	print(_active_unit)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 

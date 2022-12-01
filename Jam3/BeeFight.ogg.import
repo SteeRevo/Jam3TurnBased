@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/BeeFight.ogg-1008b7a791a704da58c802e5cee55918.oggstr"
+
+[deps]
+
+source_file="res://BeeFight.ogg"
+dest_files=[ "res://.import/BeeFight.ogg-1008b7a791a704da58c802e5cee55918.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0
