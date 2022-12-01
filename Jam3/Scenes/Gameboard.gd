@@ -34,6 +34,9 @@ onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
 onready var _enemy_camera: Camera2D = $EnemyCam
+onready var _UI: Control = $CanvasLayer/UnitUi
+onready var _UI_health_bar: TextureProgress = $CanvasLayer/UnitUi/Healthbar
+onready var _UI_health_label: Label = $CanvasLayer/UnitUi/Label
 
 onready var _ai_brain = $AIBrain
 
@@ -174,6 +177,7 @@ func _select_unit(cell: Vector2) -> void:
 	_active_unit.is_selected = true
 	_walkable_cells = get_walkable_cells(_active_unit)
 	_unit_overlay.draw(_walkable_cells)
+	_init_UI()
 	_unit_path.initialize(_walkable_cells)
 	print(_active_unit)
 
@@ -408,6 +412,12 @@ func _on_AIBrain_move(new_cell):
 #
 #
 #
+func _init_UI():
+	_UI.visible = true
+	_UI.on_max_health_updated(_active_unit.max_health)
+	_UI.on_health_updated(_active_unit.health)
+	
+
 func change_scene():
 	if len(unit_teams[ENEMY]) == 0:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")

@@ -11,6 +11,7 @@ export var move_speed := 100
 export (sides) var team
 
 export var health := 5 setget set_health
+export var max_health := 5 setget set_max_health
 export var attack := 2
 export var defense := 2
 export var hit_rate := 0.7
@@ -86,8 +87,10 @@ func set_is_walking(value: bool) -> void:
 	set_process(is_walking)
 	
 func set_health(val: int):
-	health = val
+	health = clamp(val, 0, max_health)
 	
+func set_max_health(val: int):
+	max_health = max(val, 1)
 	
 	
 

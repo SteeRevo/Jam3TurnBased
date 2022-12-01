@@ -225,6 +225,7 @@ volume_db = 1.0
 [node name="Unit" parent="Gameboard" instance=ExtResource( 4 )]
 position = Vector2( 91.3586, 88.6674 )
 skin = ExtResource( 16 )
+health = 4
 
 [node name="Sprite" parent="Gameboard/Unit/PathFollow2D" index="0"]
 modulate = Color( 1, 1, 1, 1 )
@@ -303,12 +304,13 @@ zoom = Vector2( 2.2, 2.2 )
 [node name="CanvasLayer" type="CanvasLayer" parent="Gameboard"]
 
 [node name="UnitUi" parent="Gameboard/CanvasLayer" instance=ExtResource( 5 )]
-margin_left = 29.9661
-margin_top = -1.12373
-margin_right = 29.9661
-margin_bottom = -1.12373
+visible = false
+margin_left = -1.1466
+margin_top = 1.35115
+margin_right = -1.14661
+margin_bottom = 1.35115
 
-[node name="BGM" type="AudioStreamPlayer2D" parent="."]
+[node name="BGM" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 18 )
 volume_db = -7.866
 autoplay = true
