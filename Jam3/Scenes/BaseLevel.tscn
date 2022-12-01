@@ -310,6 +310,29 @@ margin_top = 1.35115
 margin_right = -1.14661
 margin_bottom = 1.35115
 
+[node name="EnemyUnitUi" parent="Gameboard/CanvasLayer" instance=ExtResource( 5 )]
+visible = false
+margin_left = 76.9031
+margin_top = 145.25
+margin_right = 76.9031
+margin_bottom = 145.25
+
+[node name="Healthbar" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="0"]
+margin_left = 51.3257
+margin_top = 16.0289
+margin_right = 201.326
+margin_bottom = 56.0289
+
+[node name="Introbanner" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="1"]
+position = Vector2( 220.638, 25.197 )
+flip_h = true
+
+[node name="Label" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="2"]
+margin_left = 11.6672
+margin_top = 18.3847
+margin_right = 51.6672
+margin_bottom = 32.3848
+
 [node name="BGM" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 18 )
 volume_db = -7.866
@@ -322,3 +345,4 @@ autoplay = true
 
 [editable path="Gameboard/Unit"]
 [editable path="Gameboard/Unit2"]
+[editable path="Gameboard/CanvasLayer/EnemyUnitUi"]

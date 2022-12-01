@@ -30,6 +30,8 @@ const MAX_VALUE = 9999999
 
 var _movement_costs
 
+var enemy_ui_on = false
+
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
@@ -37,6 +39,10 @@ onready var _enemy_camera: Camera2D = $EnemyCam
 onready var _UI: Control = $CanvasLayer/UnitUi
 onready var _UI_health_bar: TextureProgress = $CanvasLayer/UnitUi/Healthbar
 onready var _UI_health_label: Label = $CanvasLayer/UnitUi/Label
+
+onready var _enemy_UI: Control = $CanvasLayer/EnemyUnitUi
+onready var _enemy_UI_health_bar: TextureProgress = $CanvasLayer/EnemyUnitUi/Healthbar
+onready var _enemy_UI_health_label: Label = $CanvasLayer/EnemyUnitUi/Label
 
 onready var _ai_brain = $AIBrain
 
@@ -169,6 +175,10 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	return movable_cells
 
 func _select_unit(cell: Vector2) -> void:
+	if _units.has(cell) and _units[cell].team == 1:
+		enemy_ui_on = true
+		_init_enemy_UI(cell)
+		return
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
 		return
 	
@@ -186,6 +196,7 @@ func _deselect_active_unit() -> void:
 	_active_unit.is_selected = false
 	_unit_overlay.clear()
 	_unit_path.stop()
+	_UI.visible = false
 
 
 func _clear_active_unit() -> void:
@@ -266,9 +277,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			_deselect_active_unit()
 			_clear_active_unit()
 		# press esc while choosing opponents to choose no opponent (not fight)
+	
 		if _selecting_opponent:
 			emit_signal("choose_opponent", null)
-			
+	if enemy_ui_on and event.is_action_pressed("ui_cancel"):
+		print("enemy ui off")
+		_cursor.play_deselect_sound()
+		_enemy_UI.visible = false
 
 #
 # AI-Related Methods
@@ -389,6 +404,7 @@ func get_current_game_state():
 				"cell": unit.cell,
 				"move_range": unit.move_range,
 				"health": unit.health,
+				"max_health": unit.max_health,
 				"attack": unit.attack,
 				"defense": unit.defense,
 				"hit_rate": unit.hit_rate,
@@ -411,12 +427,17 @@ func _on_AIBrain_move(new_cell):
 
 #
 #
-#
+#UI functions
 func _init_UI():
 	_UI.visible = true
 	_UI.on_max_health_updated(_active_unit.max_health)
 	_UI.on_health_updated(_active_unit.health)
 	
+func _init_enemy_UI(cell):
+	_enemy_UI.visible = true
+	_enemy_UI_health_bar.max_value = _units[cell].max_health
+	_enemy_UI_health_bar.value = _units[cell].health
+	_enemy_UI_health_label.text = str(_units[cell].health)
 
 func change_scene():
 	if len(unit_teams[ENEMY]) == 0:
