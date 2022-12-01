@@ -3,6 +3,8 @@ extends CanvasLayer
 onready var bee := $BeeActor
 onready var wasp := $WaspActor
 onready var label := $ActionLabel
+#onready var anim_player: AnimationPlayer = $AnimationPlayer
+onready var anim_player = get_node("AnimationPlayer")
 # ^ this is syntactic sugar for
 #func _ready():
 #  attacker = get_node("AttackerActor")
@@ -29,6 +31,8 @@ func _setup(attackingSide: int, y_offset: int):
 func playHit(time: float, attackingSide: int):
 	_setup(attackingSide, 0)
 	label.text = "%s Hit!" % atkname
+	anim_player.play("Hit")
+	yield(anim_player, "animation_finished")
 	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_property(attacker, "global_position", endpoint, time)
 	
@@ -37,4 +41,3 @@ func playMiss(time: float, attackingSide: int):
 	label.text = "%s Missed!" % atkname
 	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_property(attacker, "global_position", endpoint, time)
-
