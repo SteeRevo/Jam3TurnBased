@@ -28,7 +28,7 @@ margin_bottom = 831.556
 theme = ExtResource( 2 )
 text = "SFX and MUSIC"
 
-[node name="Coders" type="RichTextLabel" parent="."]
+[node name="Programmers" type="RichTextLabel" parent="."]
 margin_left = 960.0
 margin_top = 54.0
 margin_right = 1855.0
@@ -62,7 +62,7 @@ margin_bottom = 580.701
 theme = ExtResource( 1 )
 text = "					  Ian Cowan
 
-		   Salil Tantamjarikr
+		   Salil Tantamjarik
 		
 		        Ethan Nguyen
 				
