@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Bee_Attack.mp3-6442eaf4da68a5253e8a81a284e14efc.mp3str"
+
+[deps]
+
+source_file="res://Bee_Attack.mp3"
+dest_files=[ "res://.import/Bee_Attack.mp3-6442eaf4da68a5253e8a81a284e14efc.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

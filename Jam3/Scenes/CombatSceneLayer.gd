@@ -8,10 +8,13 @@ onready var label := $ActionLabel
 onready var hit_anim = $HitAnim
 onready var miss_anim = $MissAnim
 onready var anim_player = $AnimationPlayer
+onready var bee_sound = $BeeAttack
+onready var wasp_sound = $WaspAttack
 # ^ this is syntactic sugar for
 #func _ready():
 #  attacker = get_node("AttackerActor")
 #  destination = get_node("Destination")
+
 var attacker := bee
 var target := wasp
 var target_hlth := wasp_health
@@ -52,12 +55,16 @@ func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_hea
 
 	
 	if (attackingSide == PLAYER):
+		bee_sound.play()
+		bee_sound.stop()
 		wasp_health.value = prev_health
 		yield(get_tree().create_timer(0.9), "timeout")
 		$Tween.interpolate_property(wasp_health, "value", prev_health, unitB.health, 0.5, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 		$Tween.start()
 		#health_tween.tween_property(wasp_health, "", unitB.health, time)
 	else:
+		wasp_sound.play()
+		wasp_sound.stop()
 		bee_health.value = prev_health
 		yield(get_tree().create_timer(0.9), "timeout")
 		$Tween.interpolate_property(bee_health, "value", prev_health, unitB.health, 0.5, Tween.TRANS_CUBIC, Tween.EASE_OUT)

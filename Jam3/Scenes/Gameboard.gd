@@ -58,6 +58,7 @@ onready var _ai_brain = $AIBrain
 signal choose_opponent
 signal action_completed # Mainly used to indicate when the AIBrain can calculate its next action
 signal enemy_turn_finished
+signal combat_ended
 
 func _ready():
 	_movement_costs = _map.get_movement_costs(grid)
@@ -218,11 +219,9 @@ func _clear_active_unit() -> void:
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
-	if (_active_unit.team == PLAYER and (is_occupied(new_cell) or not new_cell in _walkable_cells)):
+	if (_active_unit.team == PLAYER and ((is_occupied(new_cell) and new_cell != _active_unit.cell) or not new_cell in _walkable_cells)):
 		return
 
-	if (new_cell == _active_unit.cell):
-		print("TRIED TO MOVE TO SAME CELL")
 	_units.erase(_active_unit.cell)
 	_units[new_cell] = _active_unit
 	
@@ -231,11 +230,12 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	unit_teams[_active_unit.team][new_cell] = _active_unit
 	
 	_deselect_active_unit()
-	_active_unit.walk_along(_unit_path.current_path)
-	print("WAITING FOR WALK???")
-	print("CURRENT ACTIVE UNIT: ", _active_unit)
-	yield(_active_unit, "walk_finished")
-	print("WALK SIGNAL RECEIVED")
+	if (new_cell != _active_unit.cell):
+		_active_unit.walk_along(_unit_path.current_path)
+		print("WAITING FOR WALK???")
+		print("CURRENT ACTIVE UNIT: ", _active_unit)
+		yield(_active_unit, "walk_finished")
+		print("WALK SIGNAL RECEIVED")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
 	var avail_opponents = get_adjacent_units(_active_unit.cell, 1 - _current_turn)
@@ -277,8 +277,10 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		emit_signal("action_completed")
 
 	if len(unit_teams[ENEMY]) == 0:
+		
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	if len(unit_teams[PLAYER]) == 0:
+		
 		get_tree().change_scene("res://Scenes/DefeatScene.tscn")
 	_check_turn_end()
 	
@@ -303,14 +305,14 @@ func attack(unitA: Unit, unitB: Unit):
 			
 			_remove_unit(unitB)
 			print("remain enemy ", len(unit_teams[ENEMY]))
-			change_scene()
+			
 	else:
 		instance.playMiss(1.0, _current_turn, unitA, unitB)
 	
 		
 		print("unit A misses")
 	yield(get_tree().create_timer(2), "timeout")
-	instance.emit_signal("combat_ended")	
+	emit_signal("combat_ended")	
 	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
@@ -340,6 +342,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		# press esc while choosing opponents to choose no opponent (not fight)
 	
 		if _selecting_opponent:
+			_cursor.play_deselect_sound()
 			emit_signal("choose_opponent", null)
 	if enemy_ui_on and event.is_action_pressed("ui_cancel"):
 		print("enemy ui off")
@@ -390,12 +393,11 @@ func execute_enemy_turn():
 		# If at least one enemy unit can still act and one wasn't selected by AIBrain, select the
 		# next available one
 		for unit in unit_teams[ENEMY].values():
-			yield(instance, "combat_ended")
+			
 			if (not unit.finished):
+				yield(self, "combat_ended")
 				_select_unit(unit.cell)
 				break
-
-		# No enemy units were eligible to be selected
 		if (_active_unit == null):
 			break
 

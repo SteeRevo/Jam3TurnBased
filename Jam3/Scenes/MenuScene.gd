@@ -5,7 +5,7 @@ func _ready():
 	$VBoxContainer/StartButton.grab_focus()
 	yield(get_tree().create_timer(1),"timeout")
 	$AnimationPlayer.play("Fade")
-	pass
+	
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
