@@ -107,7 +107,7 @@ func _set_turn(turn):
 	
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
-	print(len(unit_teams[ENEMY]))
+	print("NUMBER OF ENEMIES: ", len(unit_teams[ENEMY]))
 	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
 		yield(self, "enemy_turn_finished")
@@ -188,7 +188,7 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	return movable_cells
 
 func _select_unit(cell: Vector2) -> void:
-	if _units.has(cell) and _units[cell].team == 1 and _current_turn != 1:
+	if _units.has(cell) and _units[cell].team == ENEMY and _current_turn != ENEMY:
 		enemy_ui_on = true
 		_init_enemy_UI(cell)
 		return
@@ -204,7 +204,7 @@ func _select_unit(cell: Vector2) -> void:
 	_init_UI()
 	_unit_path.initialize(_walkable_cells)
 	_turn_phase = TurnPhases.MOVEMENT_SELECTION
-	print(_active_unit)
+	print("Active Unit: ", _active_unit)
 
 
 func _deselect_active_unit() -> void:
@@ -267,6 +267,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		elif (_current_turn == ENEMY):
 			print("EMITTING SIGNAL FOR END MOVEMENT")
 			emit_signal("action_completed")
+			print("EMITTED SIGNAL FOR END MOVEMENT")
 
 	# for now we say the unit is done
 	_active_unit.finished = true
@@ -361,7 +362,7 @@ func execute_enemy_turn():
 	
 	#$Cursor/Camera2D.current = false
 	#_enemy_camera.current = true
-	print(attack_occured)
+	print("Attack occured?: ", attack_occured)
 	
 	yield(get_tree().create_timer(3.5), "timeout")
 	
@@ -436,7 +437,7 @@ func get_current_game_state():
 		"current_turn": _current_turn,
 		# Holds the index in the unit_properties array of the first enemy unit properties dictionary
 		"enemy_start_index": unit_teams[0].size(),
-		# Array of 2 arrays of dictionaries that will contain relevant properties of units
+		# Array of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
 		"unit_properties": [],
 		# The current phase of the turn
