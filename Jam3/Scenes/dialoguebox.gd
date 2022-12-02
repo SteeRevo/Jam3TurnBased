@@ -1,6 +1,6 @@
 extends ColorRect
 
-export var dialogPath = "res://dialog.json"
+export var dialogPath = "res://Text/dialog.json"
 export(float) var textSpeed = 0.05
 
 # From Dialog Tutorial at https://youtu.be/GzPvN5wsp7Y

@@ -3,7 +3,7 @@ extends Resource
 
 export var size := Vector2(20,20)
 
-export var cell_size := Vector2(20,20)
+export var cell_size := Vector2(128,128)
 
 var half_cell_size = cell_size / 2
 
