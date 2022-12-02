@@ -353,8 +353,8 @@ func execute_enemy_turn():
 	print("enemy makes some plays...")
 	_cursor.not_movable = true
 	
-	$Cursor/Camera2D.current = false
-	_enemy_camera.current = true
+	#$Cursor/Camera2D.current = false
+	#_enemy_camera.current = true
 	print(attack_occured)
 	
 	yield(get_tree().create_timer(3.5), "timeout")
