@@ -58,6 +58,7 @@ func nextPhrase() -> void:
 	anim_player_i.play("indicatorbounce")
 	if phraseNum >= len(dialog):
 		self.visible = false
+		yield(get_tree().create_timer(.75), "timeout")
 		anim_player.play("cut to black")
 		
 		yield(get_tree().create_timer(.75), "timeout")
@@ -91,6 +92,6 @@ func start_game():
 
 func play_sound():
 	laser_sound.play()
-	yield(get_tree().create_timer(2.45), "timeout")
+	yield(get_tree().create_timer(2.4), "timeout")
 	laser_sound.stop()
 	return
