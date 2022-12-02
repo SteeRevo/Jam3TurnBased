@@ -42,15 +42,15 @@ tracks/0/keys = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -1.0
-margin_top = -1.0
-margin_right = -4.0
-margin_bottom = -6.0
+margin_top = 1.0
+margin_right = -1596.0
+margin_bottom = -868.0
 theme = SubResource( 1 )
 script = ExtResource( 1 )
 
 [node name="Brokecomb" type="Sprite" parent="."]
-position = Vector2( 162.5, 89.5 )
-scale = Vector2( 2.47656, 1.36719 )
+position = Vector2( 165.5, 87.5001 )
+scale = Vector2( 2.52344, 1.39844 )
 texture = ExtResource( 3 )
 
 [node name="MenuImage" type="TextureRect" parent="."]
@@ -111,9 +111,9 @@ margin_bottom = 14.0
 text = "HIVE WARS"
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 323.0
+margin_left = 3.0
+margin_top = -1.0
+margin_right = 328.0
 margin_bottom = 179.0
 color = Color( 0, 0, 0, 1 )
 
@@ -121,6 +121,11 @@ color = Color( 0, 0, 0, 1 )
 root_node = NodePath("../VBoxContainer/StartButton")
 anims/Fade = SubResource( 2 )
 anims/RESET = SubResource( 3 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 166, 89 )
+current = true
+zoom = Vector2( 0.17, 0.17 )
 
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/ControlsButton" to="." method="_on_ControlsButton_pressed"]
