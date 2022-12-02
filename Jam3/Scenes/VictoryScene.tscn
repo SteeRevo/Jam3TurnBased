@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Scenes/dialoguebox.gd" type="Script" id=1]
 [ext_resource path="res://Kenney Future.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://introvisual.png" type="Texture" id=3]
 [ext_resource path="res://pewpew.ogg" type="AudioStream" id=4]
+[ext_resource path="res://Scenes/VictoryScene.gd" type="Script" id=5]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
@@ -83,6 +84,7 @@ tracks/0/keys = {
 }
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource( 5 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 641, 360 )

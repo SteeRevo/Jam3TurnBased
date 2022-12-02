@@ -17,6 +17,10 @@ var finished := false
 onready var anim_player = get_node("../../AnimationPlayer")
 onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
 
+
+
+onready var vic_img = preload("res://Scenes/victory.png")
+
 onready var timerScreeenchange = get_node("TimerScreenchange")
 
 onready var laser_sound = get_node("../../laser")
