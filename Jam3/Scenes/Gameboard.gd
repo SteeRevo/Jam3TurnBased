@@ -219,6 +219,8 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	if (_active_unit.team == PLAYER and (is_occupied(new_cell) or not new_cell in _walkable_cells)):
 		return
 
+	if (new_cell == _active_unit.cell):
+		print("TRIED TO MOVE TO SAME CELL")
 	_units.erase(_active_unit.cell)
 	_units[new_cell] = _active_unit
 	
@@ -228,7 +230,10 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	
 	_deselect_active_unit()
 	_active_unit.walk_along(_unit_path.current_path)
+	print("WAITING FOR WALK???")
+	print("CURRENT ACTIVE UNIT: ", _active_unit)
 	yield(_active_unit, "walk_finished")
+	print("WALK SIGNAL RECEIVED")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
 	var avail_opponents = get_adjacent_units(_active_unit.cell, 1 - _current_turn)
@@ -238,6 +243,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		_selecting_opponent = true
 
 		# Wait for player choice of unit to attack
+		print("CURRENT TURN: ", _current_turn)
 		if (_current_turn == PLAYER):
 			var opp = yield(self, "choose_opponent")
 			while true:
@@ -257,6 +263,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		
 		# Have AIBrain select a player unit to fight
 		elif (_current_turn == ENEMY):
+			print("EMITTING SIGNAL FOR END MOVEMENT")
 			emit_signal("action_completed")
 
 	# for now we say the unit is done
@@ -264,6 +271,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_clear_active_unit()
 
 	if (_current_turn == ENEMY):
+		print("EMITTING SIGNAL FOR END ATTACK AND/OR MOVEMENT")
 		emit_signal("action_completed")
 
 	if len(unit_teams[ENEMY]) == 0:
@@ -365,9 +373,11 @@ func execute_enemy_turn():
 	while (true):
 		# The AIBrain may return something here, but it will mainly use signals for its actions
 		var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
-
+		#call_deferred("_ai_brain.calculate_action(get_current_game_state())")
 		# Yield to allow animations to finish
+		print("WAITING FOR ACTION")
 		yield(self, "action_completed")
+		print("ACTION COMPLETED")
 
 		# Current unit still in play or different unit was selected; keep passing game state to
 		# AIBrain
@@ -465,6 +475,7 @@ func _on_AIBrain_move(new_cell):
 
 func _on_AIBrain_skip_turn():
 	# TODO: Implement this
+	print("TURN SKIPPED?")
 	pass
 
 func _on_AIBrain_attack_select(selected_unit):
