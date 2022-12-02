@@ -26,11 +26,6 @@ var _current_turn = PLAYER
 
 var _selecting_opponent = false
 
-enum TurnPhases {MOVEMENT_SELECTION, ATTACK_SELECTION}
-
-# The current phase of the turn.
-var _turn_phase = TurnPhases.MOVEMENT_SELECTION
-
 var unit_teams = [{}, {}]
 
 const MAX_VALUE = 9999999
@@ -55,7 +50,6 @@ onready var _ai_brain = $AIBrain
 
 signal choose_opponent
 signal action_completed # Mainly used to indicate when the AIBrain can calculate its next action
-signal enemy_turn_finished
 
 func _ready():
 	_movement_costs = _map.get_movement_costs(grid)
@@ -87,7 +81,7 @@ func get_walkable_cells(unit: Unit):
 func _check_turn_end():
 	for unit in _units.values():
 		if not unit.finished:
-			print("Unit not finished: ", unit)
+			print(unit)
 			return
 	# flips the turn between 1 and 0
 	_set_turn(1 - _current_turn)
@@ -107,8 +101,6 @@ func _set_turn(turn):
 	print(len(unit_teams[ENEMY]))
 	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
-		yield(self, "enemy_turn_finished")
-		_set_turn(PLAYER)
 	elif len(unit_teams[ENEMY]) == 0:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	
@@ -200,7 +192,6 @@ func _select_unit(cell: Vector2) -> void:
 	_unit_overlay.draw(_walkable_cells)
 	_init_UI()
 	_unit_path.initialize(_walkable_cells)
-	_turn_phase = TurnPhases.MOVEMENT_SELECTION
 	print(_active_unit)
 
 
@@ -209,6 +200,7 @@ func _deselect_active_unit() -> void:
 	_unit_overlay.clear()
 	_unit_path.stop()
 	_UI.visible = false
+
 
 func _clear_active_unit() -> void:
 	_active_unit = null
@@ -231,40 +223,35 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	yield(_active_unit, "walk_finished")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
-	var avail_opponents = get_adjacent_units(_active_unit.cell, 1 - _current_turn)
-	if avail_opponents.size() > 0:
-		_turn_phase = TurnPhases.ATTACK_SELECTION
+	var avail_opponents = _get_adjacent_units(_active_unit.cell, 1 - _current_turn)
+	if avail_opponents.size() > 0 and _current_turn == PLAYER: # TODO: Remove "_current_turn == PLAYER"
 		_unit_overlay.draw(avail_opponents.keys())
 		_selecting_opponent = true
-
-		# Wait for player choice of unit to attack
-		if (_current_turn == PLAYER):
-			var opp = yield(self, "choose_opponent")
-			while true:
-				if opp in avail_opponents or opp == null:
-					print("chose %s" % opp)
-					break
-				else:
-					print("choose an adjacent enemy unit to fight!")
-					opp = yield(self, "choose_opponent")
-			_selecting_opponent = false
-			_unit_overlay.clear()
-			if (opp == null):
-				print("no fight")
+		var opp = yield(self, "choose_opponent")
+		while true:
+			if opp in avail_opponents or opp == null:
+				print("chose %s" % opp)
+				break
 			else:
-				print(_active_unit, " fights ", avail_opponents[opp])
-				attack(_active_unit, avail_opponents[opp])
+				print("choose an adjacent enemy unit to fight!")
+				opp = yield(self, "choose_opponent")
+		_selecting_opponent = false
+		_unit_overlay.clear()
+		if (opp == null):
+			print("no fight")
+			attack_occured = false
+		else:
+			print(_active_unit, " fights ", avail_opponents[opp])
+			attack(_active_unit, avail_opponents[opp])
+			
 		
-		# Have AIBrain select a player unit to fight
-		elif (_current_turn == ENEMY):
-			emit_signal("action_completed")
+
 
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
 
-	if (_current_turn == ENEMY):
-		emit_signal("action_completed")
+	emit_signal("action_completed")
 
 	if len(unit_teams[ENEMY]) == 0:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
@@ -360,6 +347,7 @@ func execute_enemy_turn():
 
 	# Select an enemy unit
 	_select_unit(unit_teams[ENEMY].values()[0].cell)
+	#var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
 
 	# Keep passing the current game state to AIBrain until enemy turn is over
 	while (true):
@@ -388,9 +376,8 @@ func execute_enemy_turn():
 	# Player's turn now
 	_cursor.not_movable = false
 	_check_turn_end()
-	emit_signal("enemy_turn_finished") # It works without this line for some reason
 
-func get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
+func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 	# get the units that are adjacent to the given cell and are on the given 
 	# team
 	var adj = {};
@@ -422,13 +409,7 @@ func get_current_game_state():
 		"enemy_start_index": unit_teams[0].size(),
 		# Array of 2 arrays of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
-		"unit_properties": [],
-		# The current phase of the turn
-		"turn_phase": _turn_phase,
-		# A reference to the tilemap. This should not be written to by AIBrain.
-		"tilemap": _map,
-		# A reference to the tilemap's grid. This should not be written to by AIBrain.
-		"grid": grid,
+		"unit_properties": []
 	}
 
 	for team in unit_teams:
@@ -444,8 +425,7 @@ func get_current_game_state():
 				"attack": unit.attack,
 				"defense": unit.defense,
 				"hit_rate": unit.hit_rate,
-				"evasion": unit.evasion,
-				"is_queen": unit == get_node_or_null("./Unit") # TODO: Change this if needed
+				"evasion": unit.evasion
 			})
 
 	return game_state
@@ -462,13 +442,6 @@ func _on_AIBrain_move(new_cell):
 	print(_active_unit)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
-
-func _on_AIBrain_skip_turn():
-	# TODO: Implement this
-	pass
-
-func _on_AIBrain_attack_select(selected_unit):
-	attack(_active_unit, selected_unit)
 
 #
 #
