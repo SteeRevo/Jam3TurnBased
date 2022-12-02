@@ -18,8 +18,6 @@ onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
 
 onready var timerScreeenchange = get_node("TimerScreenchange")
 
-signal anims_finished
-
 # onready var anim_player: AnimationPlayer = $AnimationPlayer
 
 # Called when the node enters the scene tree for the first time.
@@ -58,11 +56,8 @@ func nextPhrase() -> void:
 	anim_player_i.play("indicatorbounce")
 	if phraseNum >= len(dialog):
 		self.visible = false
-		yield(get_tree().create_timer(2), "timeout")
 		anim_player.play("cut to black")
-	
-		yield(get_tree().create_timer(2), "timeout")
-
+		yield(get_tree().create_timer(.75), "timeout")
 		
 		start_game()
 		return
