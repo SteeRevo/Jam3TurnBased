@@ -57,7 +57,7 @@ margin_right = 1240.0
 margin_bottom = 683.0
 color = Color( 1, 0.956863, 0.501961, 1 )
 script = ExtResource( 2 )
-dialogPath = "res://Text/victory_dialog.json"
+dialogPath = "res://Text/game_over_dialog.json"
 
 [node name="Text" type="RichTextLabel" parent="dialoguebox"]
 margin_left = 50.0
