@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Scenes/dialoguebox.gd" type="Script" id=1]
 [ext_resource path="res://Kenney Future.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://introvisual.png" type="Texture" id=3]
+[ext_resource path="res://pewpew.ogg" type="AudioStream" id=4]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
@@ -134,3 +135,6 @@ texture = ExtResource( 3 )
 margin_right = 1280.0
 margin_bottom = 720.0
 color = Color( 0, 0, 0, 1 )
+
+[node name="laser" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
