@@ -78,6 +78,7 @@ func _reinitialize():
 			continue
 		if unit.team == PLAYER:
 			unit_teams[PLAYER][unit.cell] = unit
+			unit.finished = unit.is_queen
 		if unit.team == ENEMY:
 			unit_teams[ENEMY][unit.cell] = unit
 			unit.finished = true
@@ -103,7 +104,7 @@ func _set_turn(turn):
 	_enemy_camera.current = false
 	$Cursor/Camera2D.current = true
 	for unit in unit_teams[_current_turn].values():
-		unit.finished = false
+		unit.finished = unit.is_queen # Queen unit is always considered finished
 	
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
@@ -467,7 +468,7 @@ func get_current_game_state():
 				"defense": unit.defense,
 				"hit_rate": unit.hit_rate,
 				"evasion": unit.evasion,
-				"is_queen": unit == get_node_or_null("./Unit") # TODO: Change this if needed
+				"is_queen": unit.is_queen
 			})
 
 	return game_state
