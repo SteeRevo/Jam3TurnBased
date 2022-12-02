@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/WaspAttack.mp3-e0b777f0b7adfa198decb74adeffde11.mp3str"
+
+[deps]
+
+source_file="res://WaspAttack.mp3"
+dest_files=[ "res://.import/WaspAttack.mp3-e0b777f0b7adfa198decb74adeffde11.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0
