@@ -6,7 +6,7 @@ signal accept_pressed(cell)
 signal moved(new_cell)
 signal hello()
 
-export var grid: Resource = preload("res://Grid.tres")
+export var grid: Resource = preload("res://new_Grid.tres")
 export var ui_cooldown := 0.1
 
 var cell := Vector2.ZERO setget set_cell
