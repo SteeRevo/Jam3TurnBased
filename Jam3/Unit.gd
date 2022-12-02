@@ -17,6 +17,7 @@ export var defense := 3
 export var hit_rate := 0.7
 export var evasion := 0.4
 
+export var is_queen := false
 
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
