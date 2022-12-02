@@ -262,11 +262,14 @@ func _move_active_unit(new_cell: Vector2) -> void:
 			else:
 				print(_active_unit, " fights ", avail_opponents[opp])
 				attack(_active_unit, avail_opponents[opp])
+				yield(self, "combat_ended")
 		
 		# Have AIBrain select a player unit to fight
 		elif (_current_turn == ENEMY):
 			print("EMITTING SIGNAL FOR END MOVEMENT")
 			emit_signal("action_completed")
+			# Wait for action from enemy and don't proceed until the combat sequence is finished
+			yield(self, "combat_ended")
 			print("EMITTED SIGNAL FOR END MOVEMENT")
 
 	# for now we say the unit is done
@@ -316,8 +319,9 @@ func attack(unitA: Unit, unitB: Unit):
 		
 		print("unit A misses")
 	yield(get_tree().create_timer(2), "timeout")
-	emit_signal("combat_ended")	
+	
 	instance.queue_free()
+	emit_signal("combat_ended")
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
@@ -366,9 +370,6 @@ func execute_enemy_turn():
 	#$Cursor/Camera2D.current = false
 	#_enemy_camera.current = true
 	print("Attack occured?: ", attack_occured)
-	
-	yield(get_tree().create_timer(3.5), "timeout")
-	
 
 	# Failsafe in case this method is called with no enemy units remaining
 	if (unit_teams[ENEMY].values().size() == 0):
@@ -399,9 +400,10 @@ func execute_enemy_turn():
 		for unit in unit_teams[ENEMY].values():
 			
 			if (not unit.finished):
-				yield(self, "combat_ended")
 				_select_unit(unit.cell)
 				break
+
+		# No enemy units were eligible to be selected
 		if (_active_unit == null):
 			break
 
