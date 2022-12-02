@@ -83,12 +83,10 @@ tracks/0/keys = {
 
 [node name="Node2D" type="Node2D"]
 
-
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 641, 360 )
 current = true
-zoom = Vector2( 4, 4 )
-
+zoom = Vector2( 0.667, 0.667 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 1 )
@@ -97,13 +95,11 @@ anims/RESET = SubResource( 1 )
 
 [node name="YSort" type="YSort" parent="."]
 
-
 [node name="dialoguebox" type="ColorRect" parent="YSort"]
 margin_left = 40.0
 margin_top = 435.0
 margin_right = 1240.0
 margin_bottom = 683.0
-
 color = Color( 1, 0.956863, 0.501961, 1 )
 script = ExtResource( 1 )
 
@@ -126,6 +122,8 @@ root_node = NodePath("../../../..")
 anims/indicatorbounce = SubResource( 6 )
 
 [node name="Timer" type="Timer" parent="YSort/dialoguebox"]
+
+[node name="TimerScreenchange" type="Timer" parent="YSort/dialoguebox"]
 
 [node name="Introvisual" type="Sprite" parent="YSort"]
 modulate = Color( 1, 1, 1, 0 )
