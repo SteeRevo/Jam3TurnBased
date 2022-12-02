@@ -377,6 +377,7 @@ func execute_enemy_turn():
 		# If at least one enemy unit can still act and one wasn't selected by AIBrain, select the
 		# next available one
 		for unit in unit_teams[ENEMY].values():
+			yield(get_tree().create_timer(2), "timeout")
 			if (not unit.finished):
 				_select_unit(unit.cell)
 				break

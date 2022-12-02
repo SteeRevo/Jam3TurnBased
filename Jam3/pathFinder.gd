@@ -3,7 +3,7 @@ extends Reference
 
 const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
-var _grid = Resource
+var _grid: Resource = preload("res://Grid.tres")
 
 var _astar = AStar2D.new()
 
