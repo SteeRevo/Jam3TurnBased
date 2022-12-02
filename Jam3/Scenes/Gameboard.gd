@@ -431,7 +431,7 @@ func get_current_game_state():
 		"current_turn": _current_turn,
 		# Holds the index in the unit_properties array of the first enemy unit properties dictionary
 		"enemy_start_index": unit_teams[0].size(),
-		# Array of 2 arrays of dictionaries that will contain relevant properties of units
+		# Array of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
 		"unit_properties": [],
 		# The current phase of the turn
