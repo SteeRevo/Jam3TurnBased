@@ -16,11 +16,16 @@ var finished := false
 onready var anim_player = get_node("../../AnimationPlayer")
 onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
 
+onready var timerScreeenchange = get_node("TimerScreenchange")
+
+signal anims_finished
+
 # onready var anim_player: AnimationPlayer = $AnimationPlayer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$Timer.wait_time = textSpeed
+	timerScreeenchange.wait_time = 1
 	dialog = getDialog()
 	assert(dialog, "Dialog not found")
 	nextPhrase()
@@ -29,6 +34,7 @@ func _process(_delta):
 	$Indicator.visible = finished
 	if Input.is_action_just_pressed("ui_accept"):
 		if finished:
+			finished = false
 			nextPhrase()
 		else:
 			$Text.visible_characters = len($Text.text)
@@ -51,8 +57,13 @@ func getDialog() -> Array:
 func nextPhrase() -> void:
 	anim_player_i.play("indicatorbounce")
 	if phraseNum >= len(dialog):
+		self.visible = false
+		yield(get_tree().create_timer(2), "timeout")
 		anim_player.play("cut to black")
-		queue_free()
+	
+		yield(get_tree().create_timer(2), "timeout")
+
+		
 		start_game()
 		return
 	
