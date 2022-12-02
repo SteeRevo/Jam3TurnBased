@@ -18,6 +18,8 @@ onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
 
 onready var timerScreeenchange = get_node("TimerScreenchange")
 
+onready var laser_sound = get_node("../../laser")
+
 # onready var anim_player: AnimationPlayer = $AnimationPlayer
 
 # Called when the node enters the scene tree for the first time.
@@ -57,12 +59,15 @@ func nextPhrase() -> void:
 	if phraseNum >= len(dialog):
 		self.visible = false
 		anim_player.play("cut to black")
+		
 		yield(get_tree().create_timer(.75), "timeout")
 		
 		start_game()
 		return
 	
 	if phraseNum == 1:
+		play_sound()
+		yield(get_tree().create_timer(2.2), "timeout")
 		anim_player.play("fade in pic")
 		
 	finished = false
@@ -83,3 +88,9 @@ func nextPhrase() -> void:
 
 func start_game():
 	get_tree().change_scene("res://Scenes/BaseLevel.tscn")
+
+func play_sound():
+	laser_sound.play()
+	yield(get_tree().create_timer(2.45), "timeout")
+	laser_sound.stop()
+	return
