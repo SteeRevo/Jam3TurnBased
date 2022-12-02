@@ -39,6 +39,8 @@ var _movement_costs
 
 var enemy_ui_on = false
 
+var instance
+
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
@@ -283,7 +285,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 # A attacks B
 func attack(unitA: Unit, unitB: Unit):
 	# instance fight scene
-	var instance = _fight_scene.instance()
+	instance = _fight_scene.instance()
 	add_child(instance)
 	
 	var roll = rng.randf()
@@ -307,7 +309,8 @@ func attack(unitA: Unit, unitB: Unit):
 	
 		
 		print("unit A misses")
-	yield(get_tree().create_timer(2), "timeout")	
+	yield(get_tree().create_timer(2), "timeout")
+	instance.emit_signal("combat_ended")	
 	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
@@ -387,7 +390,7 @@ func execute_enemy_turn():
 		# If at least one enemy unit can still act and one wasn't selected by AIBrain, select the
 		# next available one
 		for unit in unit_teams[ENEMY].values():
-			yield(get_tree().create_timer(2), "timeout")
+			yield(instance, "combat_ended")
 			if (not unit.finished):
 				_select_unit(unit.cell)
 				break

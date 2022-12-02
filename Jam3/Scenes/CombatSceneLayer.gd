@@ -17,6 +17,8 @@ var target_hlth := wasp_health
 var endpoint := Vector2(0, 0)
 var atkname := "BEE"
 
+signal combat_ended
+
 enum {PLAYER, ENEMY}
 
 func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
