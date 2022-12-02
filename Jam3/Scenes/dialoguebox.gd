@@ -57,11 +57,13 @@ func getDialog() -> Array:
 func nextPhrase() -> void:
 	anim_player_i.play("indicatorbounce")
 	if phraseNum >= len(dialog):
+		self.visible = false
+		yield(get_tree().create_timer(2), "timeout")
 		anim_player.play("cut to black")
-		queue_free()
-		print("starting timer")
-		yield(get_tree().create_timer(1), "timeout")
-		print("finished timer")
+	
+		yield(get_tree().create_timer(2), "timeout")
+
+		
 		start_game()
 		return
 	
