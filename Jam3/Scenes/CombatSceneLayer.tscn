@@ -93,31 +93,33 @@ rect_pivot_offset = Vector2( 13, 85 )
 color = Color( 0.168627, 0.0784314, 0.184314, 1 )
 
 [node name="BeeActor" type="Sprite" parent="."]
-position = Vector2( 921.942, 646.646 )
+position = Vector2( 636, 458 )
 scale = Vector2( 1.5126, 1.5126 )
 texture = ExtResource( 2 )
 
-[node name="BeeHealth" type="ProgressBar" parent="."]
-margin_left = 819.0
-margin_top = 764.0
-margin_right = 1050.0
-margin_bottom = 793.0
+[node name="BeeHealth" type="ProgressBar" parent="BeeActor"]
+margin_left = -80.6558
+margin_top = 77.3503
+margin_right = 150.344
+margin_bottom = 106.35
+rect_scale = Vector2( 0.66, 0.66 )
 custom_styles/fg = SubResource( 3 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
 percent_visible = false
 
 [node name="WaspActor" type="Sprite" parent="."]
-position = Vector2( 1661.34, 596.932 )
+position = Vector2( 1377, 444 )
 scale = Vector2( 0.280378, 0.280378 )
 texture = ExtResource( 1 )
 hframes = 3
 
-[node name="WaspHealth" type="ProgressBar" parent="."]
-margin_left = 1530.0
-margin_top = 761.0
-margin_right = 1762.0
-margin_bottom = 790.0
+[node name="WaspHealth" type="ProgressBar" parent="WaspActor"]
+margin_left = -524.293
+margin_top = 506.459
+margin_right = -293.293
+margin_bottom = 535.459
+rect_scale = Vector2( 3.7, 3.57 )
 custom_styles/fg = SubResource( 5 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
@@ -138,8 +140,7 @@ text = "Bee Hits!"
 align = 1
 
 [node name="HitAnim" type="Sprite" parent="."]
-visible = false
-position = Vector2( 1172.76, 615.43 )
+position = Vector2( 925, 449 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 4

@@ -2,8 +2,8 @@ extends CanvasLayer
 
 onready var bee := $BeeActor
 onready var wasp := $WaspActor
-onready var bee_health := $BeeHealth
-onready var wasp_health := $WaspHealth
+onready var bee_health := $BeeActor/BeeHealth
+onready var wasp_health := $WaspActor/WaspHealth
 onready var label := $ActionLabel
 onready var hit_anim = $HitAnim
 onready var anim_player = $AnimationPlayer
@@ -24,7 +24,7 @@ func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 		attacker = bee
 		target = wasp
 		atkname = "BEE"
-		endpoint = Vector2(target.position.x + 40, target.position.y + y_offset)
+		endpoint = Vector2(target.position.x + 80, target.position.y + y_offset)
 		bee_health.value = unitA.health
 		bee_health.max_value = unitA.max_health
 		wasp_health.max_value = unitB.max_health
@@ -32,7 +32,7 @@ func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 		attacker = wasp
 		target = bee
 		atkname = "WASP"
-		endpoint = Vector2(target.position.x - 40, target.position.y + y_offset)
+		endpoint = Vector2(target.position.x - 80, target.position.y + y_offset)
 		wasp_health.value = unitA.health
 		wasp_health.max_value = unitA.max_health
 		bee_health.max_value = unitB.max_health
@@ -66,7 +66,7 @@ func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_hea
 	
 func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	hit_anim.visible = false
-	_setup(attackingSide, -40, unitA, unitB)
+	_setup(attackingSide, -200, unitA, unitB)
 	if attackingSide == PLAYER:
 		wasp_health.value = unitB.health
 	else:
@@ -74,6 +74,8 @@ func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	
 	label.text = "%s Missed!" % atkname
 	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	var dodge_tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(attacker, "global_position", endpoint, time)
+	dodge_tween.tween_property(target, "global_position", Vector2(target.position.x, target.position.y + 100), time)
 	
 
