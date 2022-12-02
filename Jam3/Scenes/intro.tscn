@@ -103,13 +103,12 @@ margin_right = 1240.0
 margin_bottom = 683.0
 color = Color( 1, 0.956863, 0.501961, 1 )
 script = ExtResource( 1 )
-dialogPath = "res://Text/victory_dialog.json"
 
 [node name="Text" type="RichTextLabel" parent="YSort/dialoguebox"]
-margin_left = 20.0
+margin_left = 25.0
 margin_top = 19.0
-margin_right = 1178.0
-margin_bottom = 233.0
+margin_right = 1165.0
+margin_bottom = 227.0
 custom_colors/default_color = Color( 0.447059, 0, 0.345098, 1 )
 custom_fonts/normal_font = SubResource( 3 )
 
