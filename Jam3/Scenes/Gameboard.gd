@@ -8,6 +8,8 @@ const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 export var grid: Resource = preload("res://Grid.tres")
 onready var _fight_scene: Resource = preload("res://Scenes/CombatSceneLayer.tscn")
 
+var attack_occured = false
+
 
 onready var _unit_overlay: Overlay = $Overlay
 
@@ -237,9 +239,12 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		_unit_overlay.clear()
 		if (opp == null):
 			print("no fight")
+			attack_occured = false
 		else:
 			print(_active_unit, " fights ", avail_opponents[opp])
 			attack(_active_unit, avail_opponents[opp])
+			
+		
 
 
 	# for now we say the unit is done
@@ -327,7 +332,10 @@ func execute_enemy_turn():
 	
 	$Cursor/Camera2D.current = false
 	_enemy_camera.current = true
+	print(attack_occured)
+	
 	yield(get_tree().create_timer(3.5), "timeout")
+	
 
 	# Failsafe in case this method is called with no enemy units remaining
 	if (unit_teams[ENEMY].values().size() == 0):
