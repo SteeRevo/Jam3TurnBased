@@ -58,6 +58,7 @@ onready var _ai_brain = $AIBrain
 signal choose_opponent
 signal action_completed # Mainly used to indicate when the AIBrain can calculate its next action
 signal enemy_turn_finished
+signal combat_ended
 
 func _ready():
 	_movement_costs = _map.get_movement_costs(grid)
@@ -310,7 +311,7 @@ func attack(unitA: Unit, unitB: Unit):
 		
 		print("unit A misses")
 	yield(get_tree().create_timer(2), "timeout")
-	instance.emit_signal("combat_ended")	
+	emit_signal("combat_ended")	
 	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
@@ -390,12 +391,11 @@ func execute_enemy_turn():
 		# If at least one enemy unit can still act and one wasn't selected by AIBrain, select the
 		# next available one
 		for unit in unit_teams[ENEMY].values():
-			yield(instance, "combat_ended")
+			
 			if (not unit.finished):
+				yield(self, "combat_ended")
 				_select_unit(unit.cell)
 				break
-
-		# No enemy units were eligible to be selected
 		if (_active_unit == null):
 			break
 
