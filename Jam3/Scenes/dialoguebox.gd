@@ -13,6 +13,11 @@ var dialog: Array
 var phraseNum := 0
 var finished := false
 
+onready var anim_player = get_node("../../AnimationPlayer")
+onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
+
+# onready var anim_player: AnimationPlayer = $AnimationPlayer
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$Timer.wait_time = textSpeed
@@ -44,10 +49,15 @@ func getDialog() -> Array:
 		return []
 
 func nextPhrase() -> void:
+	anim_player_i.play("indicatorbounce")
 	if phraseNum >= len(dialog):
+		anim_player.play("cut to black")
 		queue_free()
 		start_game()
 		return
+	
+	if phraseNum == 1:
+		anim_player.play("fade in pic")
 		
 	finished = false
 	

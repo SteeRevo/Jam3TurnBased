@@ -1,12 +1,13 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scenes/dialoguebox.gd" type="Script" id=1]
 [ext_resource path="res://Kenney Future.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://introvisual.png" type="Texture" id=3]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath("dialoguebox/Indicator:position")
+tracks/0/path = NodePath("YSort/dialoguebox/Indicator:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -17,13 +18,58 @@ tracks/0/keys = {
 "update": 0,
 "values": [ Vector2( 1089, 127 ) ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("YSort/Introvisual:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ) ]
+}
 
-[sub_resource type="Animation" id=2]
-resource_name = "indicator_bounce"
-length = 0.6
+[sub_resource type="Animation" id=5]
+resource_name = "cut to black"
+tracks/0/type = "value"
+tracks/0/path = NodePath("YSort/Introvisual:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "fade in pic"
+tracks/0/type = "value"
+tracks/0/path = NodePath("YSort/Introvisual:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="DynamicFont" id=3]
+size = 40
+font_data = ExtResource( 2 )
+
+[sub_resource type="Animation" id=6]
+resource_name = "indicatorbounce"
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("dialoguebox/Indicator:position")
+tracks/0/path = NodePath("YSort/dialoguebox/Indicator:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -35,30 +81,33 @@ tracks/0/keys = {
 "values": [ Vector2( 1089, 127 ), Vector2( 1089, 110 ), Vector2( 1089, 127 ) ]
 }
 
-[sub_resource type="DynamicFont" id=3]
-size = 40
-font_data = ExtResource( 2 )
-
 [node name="Node2D" type="Node2D"]
 
-[node name="blackbg" type="ColorRect" parent="."]
-margin_right = 2569.0
-margin_bottom = 1445.0
-color = Color( 0, 0, 0, 1 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 641, 360 )
+current = true
+zoom = Vector2( 4, 4 )
+
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 1 )
-anims/indicator_bounce = SubResource( 2 )
+"anims/cut to black" = SubResource( 5 )
+"anims/fade in pic" = SubResource( 4 )
 
-[node name="dialoguebox" type="ColorRect" parent="."]
-margin_left = 337.0
-margin_top = 929.0
-margin_right = 2118.0
-margin_bottom = 1297.0
+[node name="YSort" type="YSort" parent="."]
+
+
+[node name="dialoguebox" type="ColorRect" parent="YSort"]
+margin_left = 40.0
+margin_top = 435.0
+margin_right = 1240.0
+margin_bottom = 683.0
+
 color = Color( 1, 0.956863, 0.501961, 1 )
 script = ExtResource( 1 )
 
-[node name="Text" type="RichTextLabel" parent="dialoguebox"]
+[node name="Text" type="RichTextLabel" parent="YSort/dialoguebox"]
 margin_left = 50.0
 margin_top = 19.0
 margin_right = 1737.0
@@ -66,15 +115,24 @@ margin_bottom = 333.0
 custom_colors/default_color = Color( 0.447059, 0, 0.345098, 1 )
 custom_fonts/normal_font = SubResource( 3 )
 
-[node name="Indicator" type="Polygon2D" parent="dialoguebox"]
+[node name="Indicator" type="Polygon2D" parent="YSort/dialoguebox"]
 position = Vector2( 1089, 127 )
 scale = Vector2( 1.52632, 1.45714 )
 color = Color( 0.447059, 0, 0.345098, 1 )
 polygon = PoolVector2Array( 16, 29, 35, 64, 54, 29 )
 
-[node name="Timer" type="Timer" parent="dialoguebox"]
+[node name="AnimationPlayerIndicator" type="AnimationPlayer" parent="YSort/dialoguebox/Indicator"]
+root_node = NodePath("../../../..")
+anims/indicatorbounce = SubResource( 6 )
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 641, 360 )
-current = true
-zoom = Vector2( 4, 4 )
+[node name="Timer" type="Timer" parent="YSort/dialoguebox"]
+
+[node name="Introvisual" type="Sprite" parent="YSort"]
+modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 640, 360 )
+texture = ExtResource( 3 )
+
+[node name="blackbg" type="ColorRect" parent="YSort"]
+margin_right = 1280.0
+margin_bottom = 720.0
+color = Color( 0, 0, 0, 1 )
