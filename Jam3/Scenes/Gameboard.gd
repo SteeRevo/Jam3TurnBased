@@ -8,6 +8,8 @@ const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 export var grid: Resource = preload("res://Grid.tres")
 onready var _fight_scene: Resource = preload("res://Scenes/CombatSceneLayer.tscn")
 
+var attack_occured = false
+
 
 onready var _unit_overlay: Overlay = $Overlay
 
@@ -24,11 +26,18 @@ var _current_turn = PLAYER
 
 var _selecting_opponent = false
 
+enum TurnPhases {MOVEMENT_SELECTION, ATTACK_SELECTION}
+
+# The current phase of the turn.
+var _turn_phase = TurnPhases.MOVEMENT_SELECTION
+
 var unit_teams = [{}, {}]
 
 const MAX_VALUE = 9999999
 
 var _movement_costs
+
+var enemy_ui_on = false
 
 onready var _unit_path: UnitPath = $UnitPath
 onready var _map: TileMap = $TileMap
@@ -38,10 +47,15 @@ onready var _UI: Control = $CanvasLayer/UnitUi
 onready var _UI_health_bar: TextureProgress = $CanvasLayer/UnitUi/Healthbar
 onready var _UI_health_label: Label = $CanvasLayer/UnitUi/Label
 
+onready var _enemy_UI: Control = $CanvasLayer/EnemyUnitUi
+onready var _enemy_UI_health_bar: TextureProgress = $CanvasLayer/EnemyUnitUi/Healthbar
+onready var _enemy_UI_health_label: Label = $CanvasLayer/EnemyUnitUi/Label
+
 onready var _ai_brain = $AIBrain
 
 signal choose_opponent
 signal action_completed # Mainly used to indicate when the AIBrain can calculate its next action
+signal enemy_turn_finished
 
 func _ready():
 	_movement_costs = _map.get_movement_costs(grid)
@@ -73,7 +87,7 @@ func get_walkable_cells(unit: Unit):
 func _check_turn_end():
 	for unit in _units.values():
 		if not unit.finished:
-			print(unit)
+			print("Unit not finished: ", unit)
 			return
 	# flips the turn between 1 and 0
 	_set_turn(1 - _current_turn)
@@ -93,6 +107,8 @@ func _set_turn(turn):
 	print(len(unit_teams[ENEMY]))
 	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
+		yield(self, "enemy_turn_finished")
+		_set_turn(PLAYER)
 	elif len(unit_teams[ENEMY]) == 0:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 	
@@ -169,6 +185,11 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	return movable_cells
 
 func _select_unit(cell: Vector2) -> void:
+	if _units.has(cell) and _units[cell].team == 1 and _current_turn != 1:
+		enemy_ui_on = true
+		_init_enemy_UI(cell)
+		return
+		
 	if not _units.has(cell) or _units[cell].finished or _units[cell].team != _current_turn:
 		return
 	
@@ -179,6 +200,7 @@ func _select_unit(cell: Vector2) -> void:
 	_unit_overlay.draw(_walkable_cells)
 	_init_UI()
 	_unit_path.initialize(_walkable_cells)
+	_turn_phase = TurnPhases.MOVEMENT_SELECTION
 	print(_active_unit)
 
 
@@ -186,7 +208,7 @@ func _deselect_active_unit() -> void:
 	_active_unit.is_selected = false
 	_unit_overlay.clear()
 	_unit_path.stop()
-
+	_UI.visible = false
 
 func _clear_active_unit() -> void:
 	_active_unit = null
@@ -209,37 +231,76 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	yield(_active_unit, "walk_finished")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
-	var avail_opponents = _get_adjacent_units(_active_unit.cell, 1 - _current_turn)
-	if avail_opponents.size() > 0 and _current_turn == PLAYER: # TODO: Remove "_current_turn == PLAYER"
+	var avail_opponents = get_adjacent_units(_active_unit.cell, 1 - _current_turn)
+	if avail_opponents.size() > 0:
+		_turn_phase = TurnPhases.ATTACK_SELECTION
 		_unit_overlay.draw(avail_opponents.keys())
 		_selecting_opponent = true
-		var opp = yield(self, "choose_opponent")
-		while true:
-			if opp in avail_opponents or opp == null:
-				print("chose %s" % opp)
-				break
-			else:
-				print("choose an adjacent enemy unit to fight!")
-				opp = yield(self, "choose_opponent")
-		_selecting_opponent = false
-		_unit_overlay.clear()
-		if (opp == null):
-			print("no fight")
-		else:
-			print(_active_unit, " fights ", avail_opponents[opp])
-			attack(_active_unit, avail_opponents[opp])
 
+		# Wait for player choice of unit to attack
+		if (_current_turn == PLAYER):
+			var opp = yield(self, "choose_opponent")
+			while true:
+				if opp in avail_opponents or opp == null:
+					print("chose %s" % opp)
+					break
+				else:
+					print("choose an adjacent enemy unit to fight!")
+					opp = yield(self, "choose_opponent")
+			_selecting_opponent = false
+			_unit_overlay.clear()
+			if (opp == null):
+				print("no fight")
+			else:
+				print(_active_unit, " fights ", avail_opponents[opp])
+				attack(_active_unit, avail_opponents[opp])
+		
+		# Have AIBrain select a player unit to fight
+		elif (_current_turn == ENEMY):
+			emit_signal("action_completed")
 
 	# for now we say the unit is done
 	_active_unit.finished = true
 	_clear_active_unit()
 
-	emit_signal("action_completed")
+	if (_current_turn == ENEMY):
+		emit_signal("action_completed")
 
 	if len(unit_teams[ENEMY]) == 0:
 		get_tree().change_scene("res://Scenes/VictoryScene.tscn")
+	if len(unit_teams[PLAYER]) == 0:
+		get_tree().change_scene("res://Scenes/DefeatScene.tscn")
 	_check_turn_end()
 	
+# A attacks B
+func attack(unitA: Unit, unitB: Unit):
+	# instance fight scene
+	var instance = _fight_scene.instance()
+	add_child(instance)
+	
+	var roll = rng.randf()
+	if roll < unitA.hit_rate:
+		var prev_health = unitB.health
+		# not factoring in evasion for now
+		print("unit A hits for ", unitA.attack)
+		# defense cannot block an entire attack with this formula: https://rpg.fandom.com/wiki/Damage_Formula
+		unitB.health -= unitA.attack
+		print("unit B health: ", unitB.health)
+		instance.playHit(1.0, _current_turn, unitA, unitB, prev_health, unitB.health)
+		yield(get_tree().create_timer(1), "timeout")
+		if unitB.health <= 0:
+			print("unit B is defeated!")
+			
+			_remove_unit(unitB)
+			print("remain enemy ", len(unit_teams[ENEMY]))
+			change_scene()
+	else:
+		instance.playMiss(1.0, _current_turn, unitA, unitB)
+	
+		
+		print("unit A misses")
+	yield(get_tree().create_timer(2), "timeout")	
+	instance.queue_free()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if (_current_turn != PLAYER): return
@@ -266,9 +327,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			_deselect_active_unit()
 			_clear_active_unit()
 		# press esc while choosing opponents to choose no opponent (not fight)
+	
 		if _selecting_opponent:
 			emit_signal("choose_opponent", null)
-			
+	if enemy_ui_on and event.is_action_pressed("ui_cancel"):
+		print("enemy ui off")
+		_cursor.play_deselect_sound()
+		_enemy_UI.visible = false
 
 #
 # AI-Related Methods
@@ -278,8 +343,14 @@ func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
 	print("enemy makes some plays...")
+	_cursor.not_movable = true
+	
 	$Cursor/Camera2D.current = false
 	_enemy_camera.current = true
+	print(attack_occured)
+	
+	yield(get_tree().create_timer(3.5), "timeout")
+	
 
 	# Failsafe in case this method is called with no enemy units remaining
 	if (unit_teams[ENEMY].values().size() == 0):
@@ -289,7 +360,6 @@ func execute_enemy_turn():
 
 	# Select an enemy unit
 	_select_unit(unit_teams[ENEMY].values()[0].cell)
-	#var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
 
 	# Keep passing the current game state to AIBrain until enemy turn is over
 	while (true):
@@ -316,9 +386,11 @@ func execute_enemy_turn():
 			break
 
 	# Player's turn now
+	_cursor.not_movable = false
 	_check_turn_end()
+	emit_signal("enemy_turn_finished") # It works without this line for some reason
 
-func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
+func get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 	# get the units that are adjacent to the given cell and are on the given 
 	# team
 	var adj = {};
@@ -331,33 +403,6 @@ func _get_adjacent_units(cell: Vector2, team: int) -> Dictionary:
 				adj[loc] = _units[loc]
 	return adj
 	
-# A attacks B
-func attack(unitA: Unit, unitB: Unit):
-	# instance fight scene
-	var instance = _fight_scene.instance()
-	add_child(instance)
-	
-	var roll = rng.randf()
-	if roll < unitA.hit_rate:
-		instance.playHit(1.0, _current_turn)
-		# not factoring in def, evasion for now
-		print("unit A hits for ", unitA.attack)
-		unitB.health -= unitA.attack
-		print("unit B health: ", unitB.health)
-		if unitB.health <= 0:
-			print("unit B is defeated!")
-			
-			_remove_unit(unitB)
-			print("remain enemy ", len(unit_teams[ENEMY]))
-			change_scene()
-	else:
-		instance.playMiss(1.0, _current_turn)
-	
-		
-		print("unit A misses")
-	yield(get_tree().create_timer(1.4), "timeout")	
-	instance.queue_free()
-
 #
 # remove all references to it in the board, then remove the node
 func _remove_unit(unit: Unit):
@@ -377,7 +422,13 @@ func get_current_game_state():
 		"enemy_start_index": unit_teams[0].size(),
 		# Array of 2 arrays of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
-		"unit_properties": []
+		"unit_properties": [],
+		# The current phase of the turn
+		"turn_phase": _turn_phase,
+		# A reference to the tilemap. This should not be written to by AIBrain.
+		"tilemap": _map,
+		# A reference to the tilemap's grid. This should not be written to by AIBrain.
+		"grid": grid,
 	}
 
 	for team in unit_teams:
@@ -389,10 +440,12 @@ func get_current_game_state():
 				"cell": unit.cell,
 				"move_range": unit.move_range,
 				"health": unit.health,
+				"max_health": unit.max_health,
 				"attack": unit.attack,
 				"defense": unit.defense,
 				"hit_rate": unit.hit_rate,
-				"evasion": unit.evasion
+				"evasion": unit.evasion,
+				"is_queen": unit == get_node_or_null("./Unit") # TODO: Change this if needed
 			})
 
 	return game_state
@@ -406,17 +459,30 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 
 func _on_AIBrain_move(new_cell):
 	print("new cell", new_cell)
+	print(_active_unit)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 
+func _on_AIBrain_skip_turn():
+	# TODO: Implement this
+	pass
+
+func _on_AIBrain_attack_select(selected_unit):
+	attack(_active_unit, selected_unit)
+
 #
 #
-#
+#UI functions
 func _init_UI():
 	_UI.visible = true
 	_UI.on_max_health_updated(_active_unit.max_health)
 	_UI.on_health_updated(_active_unit.health)
 	
+func _init_enemy_UI(cell):
+	_enemy_UI.visible = true
+	_enemy_UI_health_bar.max_value = _units[cell].max_health
+	_enemy_UI_health_bar.value = _units[cell].health
+	_enemy_UI_health_label.text = str(_units[cell].health)
 
 func change_scene():
 	if len(unit_teams[ENEMY]) == 0:

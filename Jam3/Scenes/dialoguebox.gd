@@ -1,17 +1,17 @@
 extends ColorRect
 
-export var dialogPath = "res://dialog.json"
+export var dialogPath = "res://Text/dialog.json"
 export(float) var textSpeed = 0.05
 
 # From Dialog Tutorial at https://youtu.be/GzPvN5wsp7Y
 # Tutorial written by use Afely
 
-var dialog
+var dialog: Array
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var phraseNum = 0
-var finished = false
+var phraseNum := 0
+var finished := false
 
 onready var anim_player = get_node("../../AnimationPlayer")
 onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
@@ -53,6 +53,7 @@ func nextPhrase() -> void:
 	if phraseNum >= len(dialog):
 		anim_player.play("cut to black")
 		queue_free()
+		start_game()
 		return
 	
 	if phraseNum == 1:
@@ -73,6 +74,6 @@ func nextPhrase() -> void:
 	finished = true
 	phraseNum += 1
 	return
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+
+func start_game():
+	get_tree().change_scene("res://Scenes/BaseLevel.tscn")

@@ -6,16 +6,16 @@
 [ext_resource path="res://UI/under_bar.png" type="Texture" id=4]
 [ext_resource path="res://introbanner.png" type="Texture" id=5]
 
-[node name="UnitUi" type="Control"]
+[node name="EnemyUnitUi" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
 
 [node name="Healthbar" type="TextureProgress" parent="."]
-margin_left = 173.745
-margin_top = 8.20012
-margin_right = 356.745
-margin_bottom = 57.2001
+margin_left = 44.2547
+margin_top = 0.472481
+margin_right = 194.255
+margin_bottom = 40.4725
 value = 50.0
 texture_under = ExtResource( 4 )
 texture_over = ExtResource( 2 )
@@ -23,8 +23,8 @@ texture_progress = ExtResource( 3 )
 tint_progress = Color( 0.0431373, 0.768627, 0.27451, 1 )
 
 [node name="Introbanner" type="Sprite" parent="."]
-position = Vector2( 100.17, 53.5575 )
-scale = Vector2( 0.156147, 0.156147 )
+position = Vector2( 23.3548, 10.3489 )
+scale = Vector2( 0.0361231, 0.0361231 )
 texture = ExtResource( 5 )
 
 [node name="Label" type="Label" parent="."]
