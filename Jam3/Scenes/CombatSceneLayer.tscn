@@ -7,26 +7,26 @@
 
 [sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.835294, 0.607843, 0.12549, 1 )
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
 border_color = Color( 0.8, 0.8, 0.8, 0 )
 
 [sub_resource type="StyleBoxFlat" id=4]
 bg_color = Color( 0.0627451, 0.0352941, 0.207843, 1 )
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
 corner_detail = 1
 
 [sub_resource type="StyleBoxFlat" id=5]
 bg_color = Color( 0.690196, 0.054902, 0.501961, 1 )
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
 border_color = Color( 0.8, 0.8, 0.8, 0 )
 
 [sub_resource type="Animation" id=1]
@@ -98,10 +98,10 @@ scale = Vector2( 1.5126, 1.5126 )
 texture = ExtResource( 2 )
 
 [node name="BeeHealth" type="ProgressBar" parent="."]
-margin_left = 873.888
-margin_top = 727.455
-margin_right = 926.888
-margin_bottom = 741.455
+margin_left = 819.0
+margin_top = 764.0
+margin_right = 1050.0
+margin_bottom = 793.0
 custom_styles/fg = SubResource( 3 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
@@ -114,10 +114,10 @@ texture = ExtResource( 1 )
 hframes = 3
 
 [node name="WaspHealth" type="ProgressBar" parent="."]
-margin_left = 1616.73
-margin_top = 743.473
-margin_right = 1669.73
-margin_bottom = 757.473
+margin_left = 1530.0
+margin_top = 761.0
+margin_right = 1762.0
+margin_bottom = 790.0
 custom_styles/fg = SubResource( 5 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
