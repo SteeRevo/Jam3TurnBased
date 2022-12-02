@@ -141,20 +141,23 @@ func _in_range_of_queen():
 			return true
 	return false
 
-func _move_towards_queen_from_afar():
-	#var valid_path_cells = _get_walkable_cells_of_active_unit()
+func _in_range_of_lowest_health_unit():
+	return false # TODO: Implement this
+
+func _move_towards_cell_from_afar(target):
+	var walkable_cells = _get_walkable_cells_of_active_unit()
 	var valid_path_cells = _get_all_ground_cells()
-	valid_path_cells.append(_get_cell_of_queen())
+	valid_path_cells.append(target)
 	var pathfinder = PathFinder.new(_current_game_state["grid"], valid_path_cells)
 	# This technically makes the destination the same cell as the queen unit instead of one of the
 	# cells adjacent to it, but whatever.
-	var point_path = pathfinder.calculate_point_path(_get_active_unit_properties()["cell"], _get_cell_of_queen())
+	var point_path = pathfinder.calculate_point_path(_get_active_unit_properties()["cell"], target)
 
 	if (point_path.size() - 1 > 0):
 		var closest_cell = point_path[0]
 		# Iteratively find the farthest valid point on point_path to use
 		for i in range(1, _get_active_unit_properties()["move_range"]):
-			if (point_path[i] in _get_non_active_unit_occupied_cells()):
+			if (not point_path[i] in walkable_cells):
 				break
 			closest_cell = point_path[i]
 
@@ -162,25 +165,27 @@ func _move_towards_queen_from_afar():
 			emit_signal("move", closest_cell)
 			return
 
-	# A path wasn't able to be formed
+	# A path wasn't able to be formed, so check more things
 	if (_is_stuck_in_1_by_1()):
 		print("Skipping turn because unit with the following properties can't move!\n", _get_active_unit_properties())
 		emit_signal("skip_turn")
 		return
 
 	# Try to find the walkable cell that's closest
-	var walkable_cells = _get_walkable_cells_of_active_unit()
 	var min_distance = INF
 	var cell_with_min_distance = walkable_cells[0]
 	for cell in walkable_cells:
 		# Get the distance if there were no units in the way
 		var min_pathfinder = PathFinder.new(_current_game_state["grid"], _get_all_ground_cells())
-		var min_point_path = min_pathfinder.calculate_point_path(cell, _get_cell_of_queen())
+		var min_point_path = min_pathfinder.calculate_point_path(cell, target)
 		if (min_point_path.size() - 1 < min_distance):
 			min_distance = min_point_path.size() - 1
 			cell_with_min_distance = cell
 
 	emit_signal("move", cell_with_min_distance)
+
+func _move_towards_queen_from_afar():
+	_move_towards_cell_from_afar(_get_cell_of_queen())
 
 # Active unit can move to queen unit and attack it
 func _move_to_attack_queen():
@@ -217,7 +222,21 @@ func _move_to_attack_queen():
 	emit_signal("move", cell_with_max_distance)
 
 func _move_towards_lowest_health_opponent_from_afar():
-	pass
+	var lowest_health_opponents = [_current_game_state["unit_properties"][0]]
+	var lowest_health = lowest_health_opponents[0]["health"]
+	for i in range(1, _current_game_state["enemy_start_index"]):
+		var opponent = _current_game_state["unit_properties"][i]
+		if (opponent["health"] < lowest_health):
+			lowest_health_opponents = [opponent]
+			lowest_health = opponent["health"]
+		elif (opponent["health"] == lowest_health):
+			lowest_health_opponents.append(opponent)
+
+	# Find the closest of the opponents with the lowest health
+	# TODO?: Implement this. Currently, the first opponent in the list of opponents with the lowest
+	# health is chosen all the time.
+
+	_move_towards_cell_from_afar(lowest_health_opponents[0]["cell"])
 
 # Selects the player unit with the least health to attack
 # If there are multiple player units with the same health, it will choose one at random to attack
@@ -281,7 +300,11 @@ var decision_tree_1 = [
 				"_move_towards_queen_from_afar()"
 			]
 		], [
-			"_move_to_random_cell_in_range()"
+			"_in_range_of_lowest_health_unit()", [
+				"_dummy_method()"
+			], [
+				"_move_towards_lowest_health_opponent_from_afar()"
+			]
 		]
 	], [
 		"_attack_lowest_health_opponent()"

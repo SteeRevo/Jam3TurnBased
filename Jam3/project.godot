@@ -90,6 +90,10 @@ config/name="Jam 3"
 run/main_scene="res://Scenes/intro.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+SceneTracker="*res://Scenes/Scene_Tracker.gd"
+
 [display]
 
 window/size/width=1920
