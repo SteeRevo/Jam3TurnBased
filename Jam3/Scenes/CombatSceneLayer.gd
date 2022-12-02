@@ -6,6 +6,7 @@ onready var bee_health := $BeeActor/BeeHealth
 onready var wasp_health := $WaspActor/WaspHealth
 onready var label := $ActionLabel
 onready var hit_anim = $HitAnim
+onready var miss_anim = $MissAnim
 onready var anim_player = $AnimationPlayer
 # ^ this is syntactic sugar for
 #func _ready():
@@ -42,6 +43,7 @@ func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 	
 func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_health: int, new_health):
 	hit_anim.visible = false
+	miss_anim.visible = false
 	_setup(attackingSide, 0, unitA, unitB)
 	label.text = "%s Hit!" % atkname
 	var action_tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
@@ -68,6 +70,7 @@ func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_hea
 	
 func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	hit_anim.visible = false
+	miss_anim.visible = false
 	_setup(attackingSide, -200, unitA, unitB)
 	if attackingSide == PLAYER:
 		wasp_health.value = unitB.health
@@ -80,4 +83,8 @@ func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	tween.tween_property(attacker, "global_position", endpoint, time)
 	dodge_tween.tween_property(target, "global_position", Vector2(target.position.x, target.position.y + 100), time)
 	
+	yield(get_tree().create_timer(1), "timeout")
+	miss_anim.visible = true
+	anim_player.play("Miss")
+	yield(get_tree().create_timer(.5), "timeout")
 
