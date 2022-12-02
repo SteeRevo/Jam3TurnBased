@@ -13,6 +13,7 @@ var dialog: Array
 var phraseNum := 0
 var finished := false
 
+
 onready var anim_player = get_node("../../AnimationPlayer")
 onready var anim_player_i = get_node("Indicator/AnimationPlayerIndicator")
 
@@ -63,7 +64,14 @@ func nextPhrase() -> void:
 		
 		yield(get_tree().create_timer(.75), "timeout")
 		
-		start_game()
+		print("scene tracker", SceneTracker.victory_occured)
+		if (SceneTracker.victory_occured):
+			print("changing to credits")
+			get_tree().change_scene("res://Scenes/Credits.tscn")
+		else:
+			SceneTracker.victory_occured = true
+			start_game()
+		
 		return
 	
 	if phraseNum == 1:

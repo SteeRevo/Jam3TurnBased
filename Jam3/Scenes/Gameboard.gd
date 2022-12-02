@@ -305,6 +305,9 @@ func attack(unitA: Unit, unitB: Unit):
 			print("unit B is defeated!")
 			
 			_remove_unit(unitB)
+			if len(unit_teams[ENEMY]) == 0:
+				get_tree().change_scene("res://Scenes/VictoryScene.tscn")
+				SceneTracker.victory_occured = true
 			print("remain enemy ", len(unit_teams[ENEMY]))
 			
 	else:
