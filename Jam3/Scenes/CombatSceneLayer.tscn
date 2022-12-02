@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://temp_hornet(evil).png" type="Texture" id=1]
+[ext_resource path="res://wasp_assets/waspsheethit1.png" type="Texture" id=1]
 [ext_resource path="res://resized2_beeSmall_attack.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/CombatSceneLayer.gd" type="Script" id=3]
 [ext_resource path="res://attackbanner_spritesheet.png" type="Texture" id=4]
@@ -85,37 +85,39 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -125.0
-margin_top = -65.0
-margin_right = 125.0
-margin_bottom = 65.0
+margin_left = -898.612
+margin_top = -517.892
+margin_right = 866.388
+margin_bottom = 400.108
 rect_pivot_offset = Vector2( 13, 85 )
 color = Color( 0.168627, 0.0784314, 0.184314, 1 )
 
 [node name="BeeActor" type="Sprite" parent="."]
-position = Vector2( 119, 92 )
-scale = Vector2( 0.25, 0.25 )
+position = Vector2( 921.942, 646.646 )
+scale = Vector2( 1.5126, 1.5126 )
 texture = ExtResource( 2 )
 
 [node name="BeeHealth" type="ProgressBar" parent="."]
-margin_left = 89.0
-margin_top = 125.0
-margin_right = 142.0
-margin_bottom = 139.0
+margin_left = 873.888
+margin_top = 727.455
+margin_right = 926.888
+margin_bottom = 741.455
 custom_styles/fg = SubResource( 3 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
 percent_visible = false
 
 [node name="WaspActor" type="Sprite" parent="."]
-position = Vector2( 195, 92 )
+position = Vector2( 1661.34, 596.932 )
+scale = Vector2( 0.280378, 0.280378 )
 texture = ExtResource( 1 )
+hframes = 3
 
 [node name="WaspHealth" type="ProgressBar" parent="."]
-margin_left = 171.0
-margin_top = 125.0
-margin_right = 224.0
-margin_bottom = 139.0
+margin_left = 1616.73
+margin_top = 743.473
+margin_right = 1669.73
+margin_bottom = 757.473
 custom_styles/fg = SubResource( 5 )
 custom_styles/bg = SubResource( 4 )
 value = 100.0
@@ -137,8 +139,7 @@ align = 1
 
 [node name="HitAnim" type="Sprite" parent="."]
 visible = false
-position = Vector2( 160, 90 )
-scale = Vector2( 0.175, 0.175 )
+position = Vector2( 1172.76, 615.43 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 4

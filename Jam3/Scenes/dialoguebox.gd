@@ -15,7 +15,7 @@ var finished := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-$Timer.wait_time = textSpeed
+	$Timer.wait_time = textSpeed
 	dialog = getDialog()
 	assert(dialog, "Dialog not found")
 	nextPhrase()

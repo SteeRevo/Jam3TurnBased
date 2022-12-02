@@ -284,7 +284,7 @@ func attack(unitA: Unit, unitB: Unit):
 		# not factoring in evasion for now
 		print("unit A hits for ", unitA.attack)
 		# defense cannot block an entire attack with this formula: https://rpg.fandom.com/wiki/Damage_Formula
-		unitB.health -= unitA.attack*(10 / (10 + unitB.defense))
+		unitB.health -= unitA.attack
 		print("unit B health: ", unitB.health)
 		instance.playHit(1.0, _current_turn, unitA, unitB, prev_health, unitB.health)
 		yield(get_tree().create_timer(1), "timeout")
