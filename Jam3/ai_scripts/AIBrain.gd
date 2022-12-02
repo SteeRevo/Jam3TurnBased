@@ -6,16 +6,18 @@ extends Node
 # Note: Lots of the functionality here is currently really inefficient, but I don't currently feel
 # like improving it.
 
+# Signals
+signal move
+signal attack_select
+signal skip_turn
+signal change_active_unit
+
 enum UnitTeamIDs {PLAYER, ENEMY}
+enum TurnPhases {MOVEMENT_SELECTION, ATTACK_SELECTION}
 
 var _current_game_state
 var my_decision_tree = null
 var my_memory := {} # Used to store data while evaluating decision tree
-
-# Signals
-signal move
-signal skip_turn
-signal change_active_unit
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -63,8 +65,12 @@ func _get_cell_of_queen():
 		# TODO: Change this to match queen properties and update game state representation
 		if (unit_props["is_queen"] == true):
 			return unit_props.cell
-	printerr("No cell for queen bee unit found!")
+
+	# No cell for queen bee unit found
 	return null
+
+func _queen_unit_is_alive():
+	return true if _get_cell_of_queen() != null else false
 
 # Returns all cells that are currently occupied by units that aren't the active unit
 func _get_non_active_unit_occupied_cells() -> Array:
@@ -123,9 +129,15 @@ func _active_unit_is_preferable():
 	return true
 
 func _in_range_of_queen():
+	var cell_of_queen = _get_cell_of_queen()
+
+	# If the queen bee unit doesn't exist anymore, return false
+	if (cell_of_queen == null):
+		return false
+
 	var walkable_cells = _get_walkable_cells_of_active_unit()
 	for cell in walkable_cells:
-		if (_cells_are_adjacent(cell, _get_cell_of_queen())):
+		if (_cells_are_adjacent(cell, cell_of_queen)):
 			return true
 	return false
 
@@ -207,11 +219,30 @@ func _move_to_attack_queen():
 func _move_towards_lowest_health_opponent_from_afar():
 	pass
 
-# Chooses the player unit with the least health to attack
-# If there are multiple players units with the same health, it will choose one at random to attack
+# Selects the player unit with the least health to attack
+# If there are multiple player units with the same health, it will choose one at random to attack
 func _attack_lowest_health_opponent():
-	pass
+	# This code's kinda bad in my opinion because it directly accesses unit properties instead of
+	# using the one from the game state passed to this object, but I'm running out of time to finish
+	# this and I guess this way would be a little more efficient
+	var adjacent_units = get_node("..").get_adjacent_units(_get_active_unit_properties()["cell"], UnitTeamIDs.PLAYER)
+	if (adjacent_units.empty()):
+		printerr("There's no units for the enemy to attack!")
+		return
 
+	var lowest_health_units = [adjacent_units.values()[0]]
+	var lowest_health = lowest_health_units[0].health
+	print("lowest_health_units: ", lowest_health_units)
+	for i in range(1, adjacent_units.values().size()):
+		var curr_adj_unit = adjacent_units.values()[i].health
+		if (curr_adj_unit.health < lowest_health_units[0].health):
+			lowest_health = curr_adj_unit.health
+			lowest_health_units = [curr_adj_unit]
+		elif (curr_adj_unit.health == lowest_health):
+			lowest_health_units.append(curr_adj_unit)
+		print("WHAT?????????")
+
+	emit_signal("attack_select", lowest_health_units[randi() % lowest_health_units.size()])
 
 func _move_to_random_cell_in_range():
 	if (_is_stuck_in_1_by_1()):
@@ -242,9 +273,17 @@ var example_tree = [
 ]
 
 var decision_tree_1 = [
-	"_in_range_of_queen()", [
-		"_move_to_attack_queen()"
+	'_current_game_state["turn_phase"] == TurnPhases.MOVEMENT_SELECTION', [
+		"_queen_unit_is_alive()", [
+			"_in_range_of_queen()", [
+				"_move_to_attack_queen()"
+			], [
+				"_move_towards_queen_from_afar()"
+			]
+		], [
+			"_move_to_random_cell_in_range()"
+		]
 	], [
-		"_move_towards_queen_from_afar()"
+		"_attack_lowest_health_opponent()"
 	]
 ]
