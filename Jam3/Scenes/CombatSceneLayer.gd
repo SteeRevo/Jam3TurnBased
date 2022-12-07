@@ -34,6 +34,9 @@ func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 		bee_health.value = unitA.health
 		bee_health.max_value = unitA.max_health
 		wasp_health.max_value = unitB.max_health
+		# Update the textures of the actors used for combat animations
+		_changeCombatActorAppearance(bee, unitA)
+		_changeCombatActorAppearance(wasp, unitB)
 	else:
 		attacker = wasp
 		target = bee
@@ -42,6 +45,9 @@ func _setup(attackingSide: int, y_offset: int, unitA: Unit, unitB: Unit):
 		wasp_health.value = unitA.health
 		wasp_health.max_value = unitA.max_health
 		bee_health.max_value = unitB.max_health
+		# Update the textures of the actors used for combat animations
+		_changeCombatActorAppearance(wasp, unitA)
+		_changeCombatActorAppearance(bee, unitB)
 	
 	
 func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_health: int, new_health):
@@ -76,6 +82,8 @@ func playHit(time: float, attackingSide: int, unitA: Unit, unitB: Unit, prev_hea
 	
 	
 func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
+	
+
 	hit_anim.visible = false
 	miss_anim.visible = false
 	_setup(attackingSide, -200, unitA, unitB)
@@ -95,3 +103,11 @@ func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	anim_player.play("Miss")
 	yield(get_tree().create_timer(.5), "timeout")
 
+func _changeCombatActorAppearance(combatActor, unitOnBoard: Unit):
+	var unitOnBoardSprite = unitOnBoard.get_node("PathFollow2D/Sprite")
+	var textureToUse = unitOnBoardSprite.get_texture()
+	combatActor.set_texture(textureToUse)
+
+	combatActor.set_hframes(unitOnBoardSprite.get_hframes())
+	combatActor.set_vframes(unitOnBoardSprite.get_vframes())
+	combatActor.set_frame(0)
