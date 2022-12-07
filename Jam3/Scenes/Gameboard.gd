@@ -446,7 +446,6 @@ func get_current_game_state():
 		# Array of dictionaries that will contain relevant properties of units
 		# All of the player unit properties come first, followed by all enemy unit properties
 		"unit_properties": [],
-		# The current phase of the turn
 		"turn_phase": _turn_phase,
 		# A reference to the tilemap. This should not be written to by AIBrain.
 		"tilemap": _map,
