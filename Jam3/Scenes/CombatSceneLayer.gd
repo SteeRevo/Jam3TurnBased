@@ -103,11 +103,11 @@ func playMiss(time: float, attackingSide: int, unitA: Unit, unitB: Unit):
 	anim_player.play("Miss")
 	yield(get_tree().create_timer(.5), "timeout")
 
-func _changeCombatActorAppearance(combatActor, unitOnBoard: Unit):
-	var unitOnBoardSprite = unitOnBoard.get_node("PathFollow2D/Sprite")
-	var textureToUse = unitOnBoardSprite.get_texture()
-	combatActor.set_texture(textureToUse)
+func _changeCombatActorAppearance(combat_actor, unit_on_board: Unit):
+	var unit_on_board_sprite = unit_on_board.get_node("PathFollow2D/Sprite")
+	var texture_to_use = unit_on_board_sprite.get_texture()
+	combat_actor.set_texture(texture_to_use)
 
-	combatActor.set_hframes(unitOnBoardSprite.get_hframes())
-	combatActor.set_vframes(unitOnBoardSprite.get_vframes())
-	combatActor.set_frame(0)
+	combat_actor.set_hframes(unit_on_board_sprite.get_hframes())
+	combat_actor.set_vframes(unit_on_board_sprite.get_vframes())
+	combat_actor.set_frame(0)
