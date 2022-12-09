@@ -570,21 +570,15 @@ margin_top = 812.76
 margin_right = 1329.9
 margin_bottom = 812.76
 
-[node name="Healthbar" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="0"]
+[node name="Introbanner" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="0"]
+position = Vector2( 1088.44, 519.644 )
+flip_h = true
+
+[node name="Healthbar" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="1"]
 margin_left = 855.223
 margin_top = 537.385
 margin_right = 1005.22
 margin_bottom = 577.385
-
-[node name="Introbanner" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="1"]
-position = Vector2( 1088.44, 519.644 )
-flip_h = true
-
-[node name="Label" parent="Gameboard/CanvasLayer/EnemyUnitUi" index="2"]
-margin_left = 11.6672
-margin_top = 18.3847
-margin_right = 51.6672
-margin_bottom = 32.3848
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 17 )

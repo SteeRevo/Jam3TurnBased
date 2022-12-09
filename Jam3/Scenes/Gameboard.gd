@@ -46,11 +46,11 @@ onready var _map: TileMap = $TileMap
 onready var _cursor: Cursor = $Cursor
 onready var _enemy_camera: Camera2D = $EnemyCam
 onready var _UI: Control = $CanvasLayer/UnitUi
-onready var _UI_health_bar: TextureProgress = $CanvasLayer/UnitUi/Healthbar
+onready var _UI_health_bar: ProgressBar = $CanvasLayer/UnitUi/Healthbar
 onready var _UI_health_label: Label = $CanvasLayer/UnitUi/Label
 
 onready var _enemy_UI: Control = $CanvasLayer/EnemyUnitUi
-onready var _enemy_UI_health_bar: TextureProgress = $CanvasLayer/EnemyUnitUi/Healthbar
+onready var _enemy_UI_health_bar: ProgressBar = $CanvasLayer/EnemyUnitUi/Healthbar
 onready var _enemy_UI_health_label: Label = $CanvasLayer/EnemyUnitUi/Label
 
 onready var _ai_brain = $AIBrain

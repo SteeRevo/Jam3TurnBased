@@ -1,7 +1,7 @@
 extends Control
 
 onready var health_bar = $Healthbar
-onready var health_label = $Label
+onready var health_label = $Healthbar/Label
 
 func on_health_updated(health):
 	health_bar.value = health

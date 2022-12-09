@@ -1,34 +1,51 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://UnitUi.gd" type="Script" id=1]
-[ext_resource path="res://UI/over_bar.png" type="Texture" id=2]
-[ext_resource path="res://UI/progress.png" type="Texture" id=3]
-[ext_resource path="res://UI/under_bar.png" type="Texture" id=4]
+[ext_resource path="res://Scenes/credits_small.tres" type="Theme" id=2]
 [ext_resource path="res://introbanner.png" type="Texture" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.835294, 0.607843, 0.12549, 1 )
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.0627451, 0.0352941, 0.207843, 1 )
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+corner_detail = 1
 
 [node name="UnitUi" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
 
-[node name="Healthbar" type="TextureProgress" parent="."]
-margin_left = 173.745
-margin_top = 8.20012
-margin_right = 356.745
-margin_bottom = 57.2001
-value = 50.0
-texture_under = ExtResource( 4 )
-texture_over = ExtResource( 2 )
-texture_progress = ExtResource( 3 )
-tint_progress = Color( 0.0431373, 0.768627, 0.27451, 1 )
-
 [node name="Introbanner" type="Sprite" parent="."]
 position = Vector2( 100.17, 53.5575 )
 scale = Vector2( 0.156147, 0.156147 )
 texture = ExtResource( 5 )
 
-[node name="Label" type="Label" parent="."]
-margin_left = 195.515
-margin_top = 2.12132
-margin_right = 235.515
-margin_bottom = 16.1213
+[node name="Healthbar" type="ProgressBar" parent="."]
+margin_left = 209.0
+margin_top = 19.0
+margin_right = 500.0
+margin_bottom = 127.0
+rect_scale = Vector2( 0.66, 0.66 )
+hint_tooltip = "Health"
+custom_styles/fg = SubResource( 1 )
+custom_styles/bg = SubResource( 2 )
+value = 100.0
+percent_visible = false
+
+[node name="Label" type="Label" parent="Healthbar"]
+margin_right = 291.0
+margin_bottom = 108.0
+theme = ExtResource( 2 )
+text = "100%"
+align = 1
+valign = 1

@@ -47,7 +47,7 @@ func _process(_delta):
 	
 func getDialog() -> Array:
 	var f = File.new()
-	assert(f.file_exists(dialogPath), "File path does not exist")
+	assert(f.file_exists(dialogPath), "File path %s does not exist" % dialogPath)
 	
 	f.open(dialogPath, File.READ)
 	var json = f.get_as_text()
