@@ -485,10 +485,10 @@ func _on_AIBrain_move(new_cell):
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 
-func _on_AIBrain_skip_turn():
-	# TODO: Implement this
-	print("TURN SKIPPED?")
-	pass
+func _on_AIBrain_skip_movement():
+	_unit_path.draw(_active_unit.cell, _active_unit.cell)
+	yield(get_tree(), "idle_frame") # Small delay so that the code for enemy turns yields correctly
+	_move_active_unit(_active_unit.cell)
 
 func _on_AIBrain_attack_select(selected_unit):
 	attack(_active_unit, selected_unit)

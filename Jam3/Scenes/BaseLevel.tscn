@@ -588,7 +588,7 @@ autoplay = true
 [connection signal="attack_select" from="Gameboard/AIBrain" to="Gameboard" method="_on_AIBrain_attack_select"]
 [connection signal="change_active_unit" from="Gameboard/AIBrain" to="Gameboard" method="_on_AIBrain_change_active_unit"]
 [connection signal="move" from="Gameboard/AIBrain" to="Gameboard" method="_on_AIBrain_move"]
-[connection signal="skip_turn" from="Gameboard/AIBrain" to="Gameboard" method="_on_AIBrain_skip_turn"]
+[connection signal="skip_movement" from="Gameboard/AIBrain" to="Gameboard" method="_on_AIBrain_skip_movement"]
 [connection signal="accept_pressed" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_accept_pressed"]
 [connection signal="moved" from="Gameboard/Cursor" to="Gameboard" method="_on_Cursor_moved"]
 

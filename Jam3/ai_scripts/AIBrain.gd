@@ -9,7 +9,7 @@ extends Node
 # Signals
 signal move
 signal attack_select
-signal skip_turn
+signal skip_movement
 signal change_active_unit
 
 enum UnitTeamIDs {PLAYER, ENEMY}
@@ -168,7 +168,7 @@ func _move_towards_cell_from_afar(target):
 	# A path wasn't able to be formed, so check more things
 	if (_is_stuck_in_1_by_1()):
 		print("Skipping turn because unit with the following properties can't move!\n", _get_active_unit_properties())
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	# Try to find the walkable cell that's closest
@@ -198,7 +198,7 @@ func _move_to_attack_queen():
 
 	if (possible_attack_cells.size() == 0):
 		printerr("Unit with the following properties wasn't able to attack the queen!\n", _get_active_unit_properties())
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	# Try to go to a cell with maximal distance from all other player units than the queen unit
@@ -264,7 +264,7 @@ func _attack_lowest_health_opponent():
 
 func _move_to_random_cell_in_range():
 	if (_is_stuck_in_1_by_1()):
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	var possible_cells = _get_walkable_cells_of_active_unit()
