@@ -3,13 +3,11 @@ extends Node
 
 # The entire point of this scene node is to determine what action to make given a game state.
 # This is done using the calculate_action method.
-# Note: Lots of the functionality here is currently really inefficient, but I don't currently feel
-# like improving it.
 
 # Signals
 signal move
 signal attack_select
-signal skip_turn
+signal skip_movement
 signal change_active_unit
 
 enum UnitTeamIDs {PLAYER, ENEMY}
@@ -84,9 +82,10 @@ func _get_all_currently_occupiable_cells() -> Array:
 	var all_tilemap_cells = _current_game_state["tilemap"].get_used_cells()
 	var tilemap_movement_costs = _current_game_state["tilemap"].get_movement_costs(_current_game_state["grid"])
 	var occupiable_path_cells = []
+	var non_active_unit_occupied_cells = _get_non_active_unit_occupied_cells()
 	for cell in all_tilemap_cells:
 		if (tilemap_movement_costs[cell.y][cell.x] < 1000 # Arbitrary value that's less than the movement cost for barrier cells
-		and not cell in _get_non_active_unit_occupied_cells()):
+		and not cell in non_active_unit_occupied_cells):
 			occupiable_path_cells.append(cell)
 
 	return occupiable_path_cells
@@ -168,7 +167,7 @@ func _move_towards_cell_from_afar(target):
 	# A path wasn't able to be formed, so check more things
 	if (_is_stuck_in_1_by_1()):
 		print("Skipping turn because unit with the following properties can't move!\n", _get_active_unit_properties())
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	# Try to find the walkable cell that's closest
@@ -198,18 +197,19 @@ func _move_to_attack_queen():
 
 	if (possible_attack_cells.size() == 0):
 		printerr("Unit with the following properties wasn't able to attack the queen!\n", _get_active_unit_properties())
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	# Try to go to a cell with maximal distance from all other player units than the queen unit
 	var max_dist = 0
 	var cell_with_max_distance = possible_attack_cells[0]
+	var all_currently_occupiable_cells = _get_all_currently_occupiable_cells()
 	for target_cell in possible_attack_cells:
 		var distance_sum = 0
 		for i in range(_current_game_state["enemy_start_index"]):
 			if (_current_game_state["unit_properties"][i]["is_queen"]):
 				continue
-			var pathfinding_cells = _get_all_currently_occupiable_cells()
+			var pathfinding_cells = all_currently_occupiable_cells
 			pathfinding_cells.append(_current_game_state["unit_properties"][i].cell)
 			var pathfinder = PathFinder.new(_current_game_state["grid"], pathfinding_cells)
 			var point_path = pathfinder.calculate_point_path(_current_game_state["unit_properties"][i].cell, target_cell)
@@ -264,7 +264,7 @@ func _attack_lowest_health_opponent():
 
 func _move_to_random_cell_in_range():
 	if (_is_stuck_in_1_by_1()):
-		emit_signal("skip_turn")
+		emit_signal("skip_movement")
 		return
 
 	var possible_cells = _get_walkable_cells_of_active_unit()
