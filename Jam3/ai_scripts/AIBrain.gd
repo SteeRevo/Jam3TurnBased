@@ -3,8 +3,6 @@ extends Node
 
 # The entire point of this scene node is to determine what action to make given a game state.
 # This is done using the calculate_action method.
-# Note: Lots of the functionality here is currently really inefficient, but I don't currently feel
-# like improving it.
 
 # Signals
 signal move
@@ -84,9 +82,10 @@ func _get_all_currently_occupiable_cells() -> Array:
 	var all_tilemap_cells = _current_game_state["tilemap"].get_used_cells()
 	var tilemap_movement_costs = _current_game_state["tilemap"].get_movement_costs(_current_game_state["grid"])
 	var occupiable_path_cells = []
+	var non_active_unit_occupied_cells = _get_non_active_unit_occupied_cells()
 	for cell in all_tilemap_cells:
 		if (tilemap_movement_costs[cell.y][cell.x] < 1000 # Arbitrary value that's less than the movement cost for barrier cells
-		and not cell in _get_non_active_unit_occupied_cells()):
+		and not cell in non_active_unit_occupied_cells):
 			occupiable_path_cells.append(cell)
 
 	return occupiable_path_cells
@@ -204,12 +203,13 @@ func _move_to_attack_queen():
 	# Try to go to a cell with maximal distance from all other player units than the queen unit
 	var max_dist = 0
 	var cell_with_max_distance = possible_attack_cells[0]
+	var all_currently_occupiable_cells = _get_all_currently_occupiable_cells()
 	for target_cell in possible_attack_cells:
 		var distance_sum = 0
 		for i in range(_current_game_state["enemy_start_index"]):
 			if (_current_game_state["unit_properties"][i]["is_queen"]):
 				continue
-			var pathfinding_cells = _get_all_currently_occupiable_cells()
+			var pathfinding_cells = all_currently_occupiable_cells
 			pathfinding_cells.append(_current_game_state["unit_properties"][i].cell)
 			var pathfinder = PathFinder.new(_current_game_state["grid"], pathfinding_cells)
 			var point_path = pathfinder.calculate_point_path(_current_game_state["unit_properties"][i].cell, target_cell)
