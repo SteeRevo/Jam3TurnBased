@@ -188,6 +188,15 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 	
 	return movable_cells
 
+func detect_formation(cell):
+	var diagUpperRight = Vector2.ZERO
+	diagUpperRight.x = cell.x + 1
+	diagUpperRight.y = cell.y - 1
+	print("current cell = ", cell.x, " ", cell.y)
+	print("upperRight cell = ", diagUpperRight.x, " ", diagUpperRight.y)
+	print(is_occupied(diagUpperRight))
+	 
+
 func _select_unit(cell: Vector2) -> void:
 	if _units.has(cell) and _units[cell].team == ENEMY and _current_turn != ENEMY:
 		enemy_ui_on = true
@@ -275,6 +284,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 
 	# for now we say the unit is done
 	_active_unit.finished = true
+	detect_formation(_active_unit.cell)
 	_clear_active_unit()
 
 	if (_current_turn == ENEMY):
