@@ -91,7 +91,7 @@ func get_walkable_cells(unit: Unit):
 func _check_turn_end():
 	for unit in _units.values():
 		if not unit.finished:
-			print("Unit not finished: ", unit)
+			#print("Unit not finished: ", unit)
 			return
 	# flips the turn between 1 and 0
 	_set_turn(1 - _current_turn)
@@ -99,7 +99,7 @@ func _check_turn_end():
 	
 func _set_turn(turn):
 	_current_turn = turn
-	print("turn: %s" % _current_turn)
+	#print("turn: %s" % _current_turn)
 	# reset all units of the next player to ready
 	_enemy_camera.current = false
 	$Cursor/Camera2D.current = true
@@ -108,7 +108,7 @@ func _set_turn(turn):
 	
 	# maybe send some signal to enemy AI or player?
 	# temp turn-passing code:
-	print("NUMBER OF ENEMIES: ", len(unit_teams[ENEMY]))
+	#print("NUMBER OF ENEMIES: ", len(unit_teams[ENEMY]))
 	if _current_turn == ENEMY and len(unit_teams[ENEMY]) != 0:
 		execute_enemy_turn()
 		yield(self, "enemy_turn_finished")
@@ -187,14 +187,47 @@ func dijkstra(cell: Vector2, max_distance: int) -> Array:
 		
 	
 	return movable_cells
-
+	
 func detect_formation(cell):
+	"""
 	var diagUpperRight = Vector2.ZERO
 	diagUpperRight.x = cell.x + 1
 	diagUpperRight.y = cell.y - 1
 	print("current cell = ", cell.x, " ", cell.y)
 	print("upperRight cell = ", diagUpperRight.x, " ", diagUpperRight.y)
 	print(is_occupied(diagUpperRight))
+	"""
+	
+	# possible positions of formation relative to current cell, indexed by x, y offset + 1 (-1 is at 0, 1 is at 2)
+	var possibleFormations = {
+		"x": [true, false, true],
+		"y": [true, false, true]
+	}
+	# iterate through each corner
+	for p in [-1, 1]:
+		for q in [-1, 1]: 
+			var toCheck = Vector2(cell.x + p, cell.y + q)
+			print("Cell %s, %s = %s" % [p, q , toCheck])
+			print(is_occupied(toCheck))
+			if is_occupied(toCheck):
+				pass
+			else:
+				# rule out both formations that would use this cell
+				possibleFormations.x[p + 1] = false
+				possibleFormations.y[q + 1] = false
+				# no more formations possible in this loop, no need to cont.
+				break
+	# check the last cell for any formations still possible
+	for k in [-1, 1]:
+		if possibleFormations.x[k + 1]:
+			var oppCell = Vector2(cell.x + (k * 2), cell.y)
+			if is_occupied(oppCell): 
+				print("plus formation exists around %s, %s!" % [cell.x + k, cell.y])
+		if possibleFormations.y[k + 1]:
+			var oppCell = Vector2(cell.x, cell.y + (k * 2))
+			if is_occupied(oppCell): 
+				print("plus formation exists around %s, %s!" % [cell.x, cell.y + k])
+			
 	 
 
 func _select_unit(cell: Vector2) -> void:
@@ -242,10 +275,10 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_deselect_active_unit()
 	if (new_cell != _active_unit.cell):
 		_active_unit.walk_along(_unit_path.current_path)
-		print("WAITING FOR WALK???")
-		print("CURRENT ACTIVE UNIT: ", _active_unit)
+		#print("WAITING FOR WALK???")
+		#print("CURRENT ACTIVE UNIT: ", _active_unit)
 		yield(_active_unit, "walk_finished")
-		print("WALK SIGNAL RECEIVED")
+		#print("WALK SIGNAL RECEIVED")
 	# process combat choices
 	# yield again and wait for opponent choice (if any)
 	var avail_opponents = get_adjacent_units(_active_unit.cell, 1 - _current_turn)
@@ -260,27 +293,28 @@ func _move_active_unit(new_cell: Vector2) -> void:
 			var opp = yield(self, "choose_opponent")
 			while true:
 				if opp in avail_opponents or opp == null:
-					print("chose %s" % opp)
+					#print("chose %s" % opp)
 					break
 				else:
-					print("choose an adjacent enemy unit to fight!")
+					#print("choose an adjacent enemy unit to fight!")
 					opp = yield(self, "choose_opponent")
 			_selecting_opponent = false
 			_unit_overlay.clear()
 			if (opp == null):
-				print("no fight")
+				#print("no fight")
+				pass
 			else:
-				print(_active_unit, " fights ", avail_opponents[opp])
+				# print(_active_unit, " fights ", avail_opponents[opp])
 				attack(_active_unit, avail_opponents[opp])
 				yield(self, "combat_ended")
 		
 		# Have AIBrain select a player unit to fight
 		elif (_current_turn == ENEMY):
-			print("EMITTING SIGNAL FOR END MOVEMENT")
+			#print("EMITTING SIGNAL FOR END MOVEMENT")
 			emit_signal("action_completed")
 			# Wait for action from enemy and don't proceed until the combat sequence is finished
 			yield(self, "combat_ended")
-			print("EMITTED SIGNAL FOR END MOVEMENT")
+			#print("EMITTED SIGNAL FOR END MOVEMENT")
 
 	# for now we say the unit is done
 	_active_unit.finished = true
@@ -288,7 +322,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_clear_active_unit()
 
 	if (_current_turn == ENEMY):
-		print("EMITTING SIGNAL FOR END ATTACK AND/OR MOVEMENT")
+		#print("EMITTING SIGNAL FOR END ATTACK AND/OR MOVEMENT")
 		emit_signal("action_completed")
 
 	if len(unit_teams[ENEMY]) == 0:
@@ -309,26 +343,26 @@ func attack(unitA: Unit, unitB: Unit):
 	if roll < unitA.hit_rate:
 		var prev_health = unitB.health
 		# not factoring in evasion for now
-		print("unit A hits for ", unitA.attack)
+		#print("unit A hits for ", unitA.attack)
 		# defense cannot block an entire attack with this formula: https://rpg.fandom.com/wiki/Damage_Formula
 		unitB.health -= unitA.attack
-		print("unit B health: ", unitB.health)
+		#print("unit B health: ", unitB.health)
 		instance.playHit(1.0, _current_turn, unitA, unitB, prev_health, unitB.health)
 		yield(get_tree().create_timer(1), "timeout")
 		if unitB.health <= 0:
-			print("unit B is defeated!")
+			#print("unit B is defeated!")
 			
 			_remove_unit(unitB)
 			if len(unit_teams[ENEMY]) == 0:
 				get_tree().change_scene("res://Scenes/VictoryScene.tscn")
 				SceneTracker.victory_occured = true
-			print("remain enemy ", len(unit_teams[ENEMY]))
+			#print("remain enemy ", len(unit_teams[ENEMY]))
 			
 	else:
 		instance.playMiss(1.0, _current_turn, unitA, unitB)
 	
 		
-		print("unit A misses")
+		#print("unit A misses")
 	yield(get_tree().create_timer(2), "timeout")
 	
 	instance.queue_free()
@@ -364,7 +398,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_cursor.play_deselect_sound()
 			emit_signal("choose_opponent", null)
 	if enemy_ui_on and event.is_action_pressed("ui_cancel"):
-		print("enemy ui off")
+		#print("enemy ui off")
 		_cursor.play_deselect_sound()
 		_enemy_UI.visible = false
 
@@ -375,12 +409,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func execute_enemy_turn():
 	# i Imagine we'll have the actual AI activate on some signal, then it sends
 	# a signal back on finishing or something
-	print("enemy makes some plays...")
+	#print("enemy makes some plays...")
 	_cursor.not_movable = true
 	
 	#$Cursor/Camera2D.current = false
 	#_enemy_camera.current = true
-	print("Attack occured?: ", attack_occured)
+	#print("Attack occured?: ", attack_occured)
 
 	# Failsafe in case this method is called with no enemy units remaining
 	if (unit_teams[ENEMY].values().size() == 0):
@@ -397,9 +431,9 @@ func execute_enemy_turn():
 		var ai_brain_return_value = _ai_brain.calculate_action(get_current_game_state())
 		#call_deferred("_ai_brain.calculate_action(get_current_game_state())")
 		# Yield to allow animations to finish
-		print("WAITING FOR ACTION")
+		#print("WAITING FOR ACTION")
 		yield(self, "action_completed")
-		print("ACTION COMPLETED")
+		#print("ACTION COMPLETED")
 
 		# Current unit still in play or different unit was selected; keep passing game state to
 		# AIBrain
@@ -490,8 +524,8 @@ func _on_AIBrain_change_active_unit(cell: Vector2):
 	_select_unit(cell)
 
 func _on_AIBrain_move(new_cell):
-	print("new cell", new_cell)
-	print(_active_unit)
+	#print("new cell", new_cell)
+	#print(_active_unit)
 	_unit_path.draw(_active_unit.cell, new_cell)
 	_move_active_unit(new_cell)
 
